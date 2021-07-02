@@ -25,6 +25,7 @@ url_base <- "https://legis.senado.leg.br/dadosabertos/"
 
 # funções -----------------------------------------------------------------
 
+usethis::use_directory("data-raw")
 
 # baixar_reunioes ---------------------------------------------------------
 baixar_reunioes_cpi <- function(mes,
@@ -69,11 +70,11 @@ xml2::read_xml(arquivo) %>%
 # baixar os discursos
 baixar_discursos <- function(reuniao, prog, force = FALSE) {
 
-  destino <- glue::glue("data-raw/discursos_{reuniao}.html")
+  arquivo_destino <- glue::glue("data-raw/discursos_{reuniao}.html")
 
-  if (file.exists(destino)) {
+  if (file.exists(arquivo_destino)) {
 
-    tamanho <- fs::file_info(destino)$size %>%
+    tamanho <- fs::file_info(arquivo_destino)$size %>%
       as.numeric()
 
     if (tamanho > 1000 & force == TRUE) {
@@ -104,15 +105,27 @@ baixar_discursos <- function(reuniao, prog, force = FALSE) {
     xml2::xml_text()
 
   # com o link, salvar a página com as notas em si
+
+  # criar arquivo temporario
+  temporario <- tempfile(fileext = ".html")
+
+  # tentar o download
   link_notas %>%
     httr::GET(
       httr::accept_xml(),
       httr::write_disk(
-        path = arquivo_destino,
+        path = temporario,
         overwrite = TRUE
       ),
       httr::progress()
     )
+
+  # checar se o arquivo não é vazio
+  if (fs::file_size(temporario, fail = FALSE) > 10000) {
+
+    fs::file_copy(temporario, arquivo_destino, overwrite = force)
+  }
+
 
 Sys.sleep(1)
 
@@ -149,7 +162,7 @@ lista_discursos_para_baixar %>%
 # # teste
 # lista_html <- fs::dir_info("data-raw", regex = "\\.html$") %>%
 #   dplyr::select(path, size) %>%
-#   dplyr::arrange(dplyr::desc(size)) %>%
+#   dplyr::arrange(size) %>%
 #   dplyr::pull(path)
 
 
