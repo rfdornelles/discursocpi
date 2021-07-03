@@ -117,6 +117,8 @@ limpar_discursos_sessao <- function(arquivo) {
     janitor::clean_names() %>%
     dplyr::rename(texto = texto_com_revisao)
 
+  regex_falante <- "^[[:upper:]]{2,}.*?–"
+
   discursos_limpo <- discursos %>%
     # separar as linhas
     tidyr::separate_rows(texto, sep = "(O|A) (SR|SRA)\\.") %>%
@@ -124,9 +126,9 @@ limpar_discursos_sessao <- function(arquivo) {
       # cortar espaços vazios
       texto = stringr::str_trim(texto),
       # regex para identificar quem tá falando
-      falante = stringr::str_extract(texto, pattern = "^[[:upper:]]{2,}.* – "),
+      falante = stringr::str_extract(texto, pattern = regex_falante),
       # remover do texto quem tá falando
-      texto = stringr::str_remove(texto, "^[[:upper:]]{2,}.* – ")
+      texto = stringr::str_remove(texto, regex_falante)
     ) %>%
     # preencher os NAs com a pessoa que falava imediatamente antes
     tidyr::fill(falante)
@@ -165,9 +167,11 @@ purrr::map_dfr(
 ) %>%
   dplyr::arrange(numero_sessao)
 
-purrr::map_dfr(
+base <- purrr::map_dfr(
   lista_html,
   limpar_discursos_sessao
 ) %>%
   dplyr::arrange(numero_sessao)
 
+base %>%
+  dplyr::select(falante, texto, data_sessao) %>% View()
