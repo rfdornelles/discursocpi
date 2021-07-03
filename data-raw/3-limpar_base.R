@@ -88,6 +88,18 @@ base_limpa <- base_limpa %>%
     senado = dplyr::if_else(is.na(partido_sigla), FALSE, TRUE, FALSE)
   )
 
+# papel na Comissão
+
+base_limpa <- base_limpa %>%
+  dplyr::mutate(
+    papel = dplyr::case_when(
+      senado == FALSE ~ "Depoente/Convidado",
+      como_presidente == TRUE ~ "Presidindo Sessão",
+      senado == TRUE ~ "Senador/a",
+      TRUE ~ NA_character_
+    )
+  )
+
 # exportar ----------------------------------------------------------------
 # salvar com nome melhor
 discursos_cpi <- base_limpa
