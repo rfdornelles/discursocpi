@@ -66,6 +66,18 @@ base_limpa <- base_limpa %>%
                   sep = " - ")
 
 
+# corrigir duplicados -----------------------------------------------------
+
+base_limpa <- base_limpa %>%
+  dplyr::mutate(
+    falante = dplyr::case_when(
+    falante == "MARCELO ANTÔNIO CARTAXO QUEIROGA LOPES" ~ "MARCELO QUEIROGA",
+    falante == "MARCELLUS JOSÉ BARROSO CAMPÊLO" ~ "MARCELLUA CAMPELO",
+    TRUE ~ falante
+    )
+  )
+
+
 # acrescentar dados -------------------------------------------------------
 
 # acrescentar gênero
@@ -103,6 +115,5 @@ base_limpa <- base_limpa %>%
 # exportar ----------------------------------------------------------------
 # salvar com nome melhor
 discursos_cpi <- base_limpa
-
 
 usethis::use_data(discursos_cpi, overwrite = TRUE, version = 3)
