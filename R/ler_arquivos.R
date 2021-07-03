@@ -84,8 +84,6 @@ ler_infos_sessao <- function(arquivo) {
 
 # função limpar a sessão --------------------------------------------------
 
-arquivo = lista_html[6]
-
 limpar_discursos_sessao <- function(arquivo) {
 
   # ler o html do arquivo, com encoding correto
@@ -153,7 +151,8 @@ limpar_discursos_sessao <- function(arquivo) {
       horario_duracao =  horario_fim - horario_inicio,
       data_sessao = lubridate::dmy(data)
     ) %>%
-    dplyr::select(-horario)
+    dplyr::select(numero_sessao, falante, texto, data_sessao, horario_inicio,
+                  horario_fim, horario_duracao)
 
 
 }
@@ -161,17 +160,11 @@ limpar_discursos_sessao <- function(arquivo) {
 
 
 #######
-purrr::map_dfr(
-  lista_html,
-  ler_infos_sessao
-) %>%
-  dplyr::arrange(numero_sessao)
+# purrr::map_dfr(
+#   lista_html,
+#   ler_infos_sessao
+# ) %>%
+#   dplyr::arrange(numero_sessao)
 
-base <- purrr::map_dfr(
-  lista_html,
-  limpar_discursos_sessao
-) %>%
-  dplyr::arrange(numero_sessao)
 
-base %>%
-  dplyr::select(falante, texto, data_sessao) %>% View()
+
