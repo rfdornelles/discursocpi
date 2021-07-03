@@ -37,6 +37,28 @@ load("data/discursos_cpi.rda")
 # 7. nuvem de palavras
   # por
 
+# Visão geral
+  # quantidade de sessões
+  # total de horas
+  # quantidade de pessoas que falou
+  # perfil
+
+# Analisar discurso
+  # o que a pessoa mais falou
+  # quantidade de horas que a pessoa falou
+  # palavras mais faladas
+  # sessão em que mais falou
+
+# Analisar sessão
+  # duração
+  # quantas falaram
+  #
+
+# Analisar termo
+  # ranking
+  # quem falou
+  # quando falou
+
 # UI ----------------------------------------------------------------------
 
 
@@ -45,28 +67,41 @@ ui <- dashboardPage(
   skin = "black",
   dashboardHeader(title = "CPI da Pandemia"),
 
-# Sidebar -----------------------------------------------------------------
+  # Sidebar -----------------------------------------------------------------
   dashboardSidebar(
     sidebarMenu(
-      # Analisar discursos da CPI
-      # 1. Apresentação
+      # Apresentação
       menuItem("Apresentação", tabName = "intro"),
-      # 2. Quantas sessões
-      menuItem("Sessões", tabName = "sessoes"),
-      # 3. Discursos
-      menuItem("Discursos", tabName = "discursos"),
-      # 4. parlamentares
-      menuItem("Parlamentares", tabName = "parlamentares"),
-      # 5. depoentes
-      menuItem("Depoimentos", tabName = "depoimentos"),
-      # 6. social
-      menuItem("Análises", tabName = "analises"),
-      # 7. nuvem de palavras
-      menuItem("Insights", tabName = "insigths")
-  )
+
+      # Visão Geral
+      menuItem("Visão Geral", tabName = "visao_geral"),
+      # quantidade de sessões
+      # total de horas
+      # quantidade de pessoas que falou
+      # perfil
+
+      # Analisar discurso
+      menuItem("Discursos", tabName = "analisar_discursos"),
+      # o que a pessoa mais falou
+      # quantidade de horas que a pessoa falou
+      # palavras mais faladas
+      # sessão em que mais falou
+
+      # Analisar sessão
+      menuItem("Sessões", tabName = "analisar_sessoes"),
+      # duração
+      # quantas falaram
+      #
+
+      # Analisar termo
+      menuItem("Termos", tabName = "analisar_termos")
+      # ranking
+      # quem falou
+      # quando falou
+    )
   ),
 
-# body --------------------------------------------------------------------
+  # body --------------------------------------------------------------------
 
   dashboardBody(
     tabItems(
@@ -82,70 +117,56 @@ ui <- dashboardPage(
           )
         )
       ),
-      # 2. Quantas sessões
-      tabItem(
-        tabName = "sessoes",
 
+
+      # Visão Geral
+      tabItem(
+        # começo - visão geral
+
+        tabName = "visao_geral"
+
+        # quantidade de sessões
+
+        # total de horas
+
+        # quantidade de pessoas que falou
+
+        # perfil
+
+
+        # fim - visão geral
         ),
+
+
+      # Analisar discurso
+      tabItem(
+        tabName = "analisar_discursos"),
+      # o que a pessoa mais falou
+      # quantidade de horas que a pessoa falou
+      # palavras mais faladas
+      # sessão em que mais falou
+
+      # Analisar sessão
+      tabItem(
+        tabName = "analisar_sessoes"),
       # duração
-      # periodicidade
-      # 3. Discursos
+      # quantas falaram
+
+
+      # Analisar termo
       tabItem(
-        tabName = "discursos"),
-      # por bloco
-      # por alinhamento
-      # 4. parlamentares
-      tabItem(
-        tabName = "parlamentares"),
-      # quantidade de sessões em que falou
-      # quantidade de tempo
-      # 5. depoentes
-      tabItem(
-        tabName = "depoimentos"),
-      # 6. social
-      tabItem(
-        tabName = "analises"),
-      # partido
-      # uf
-      # gênero
-      # alinhamento
-      # 7. nuvem de palavras
-      tabItem(
-        tabName = "insigths")
+        tabName = "analisar_termos")
+      # ranking
+      # quem falou
+      # quando falou
     )
   )
 )
-
 
 # Server ------------------------------------------------------------------
 
 
 server <- function(input, output, session) {
-
-  # Analisar discursos da CPI
-  # 1. Apresentação
-
-   # 2. Quantas sessões
-
-  # duração
-  # periodicidade
-  # 3. Discursos
-
-  # por bloco
-  # por alinhamento
-  # 4. parlamentares
-
-  # quantidade de sessões em que falou
-  # quantidade de tempo
-  # 5. depoentes
-
-  # 6. social
-
-  # partido
-  # uf
-  # gênero
-  # alinhamento
-  # 7. nuvem de palavras
 
 
 }
