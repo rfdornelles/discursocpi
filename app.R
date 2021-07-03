@@ -6,9 +6,14 @@
 # Pacotes -----------------------------------------------------------
 
 library(magrittr)
+library(tibble)
 library(shiny)
 library(shinydashboard)
 
+
+# Base --------------------------------------------------------------------
+
+load("data/discursos_cpi.rda")
 
 # ideia -------------------------------------------------------------------
 
@@ -79,7 +84,9 @@ ui <- dashboardPage(
       ),
       # 2. Quantas sessões
       tabItem(
-        tabName = "sessoes"),
+        tabName = "sessoes",
+
+        ),
       # duração
       # periodicidade
       # 3. Discursos
