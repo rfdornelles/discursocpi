@@ -63,11 +63,9 @@ base_limpa <- base_limpa %>%
   tidyr::separate(col = partido,
                   into = c("partido_sigla", "partido_uf"),
                   sep = " - ")
-
+# salvar com nome melhor
+discursos_cpi <- base_limpa
 
 # exportar ----------------------------------------------------------------
 
-usethis::use_directory("data")
-readr::write_rds(base_limpa,
-                 "data/base_discursos_cpi.rds",
-                 version = 3, compress = "gz")
+usethis::use_data(discursos_cpi, overwrite = TRUE, version = 3)

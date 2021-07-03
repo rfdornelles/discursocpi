@@ -1,0 +1,44 @@
+#' Discursos proferidos na CPI da Pandemia no Senado.
+#'
+#' Base raspada e organizada do site do Senado Federal com todos os discursos
+#' proferidos nas reuniões da CPI da Pandemia. Os discursos foram transcritos
+#' pela equipe do Senado Federal e disponibilizados no site.
+#'
+#' Os dados foram raspados utilizando a API do Senado e foram organizados e limpos
+#' de forma que estejam em formato _tidy_.
+#'
+#' @format Tibble:
+#' \describe{
+#'   \item{numero_sessao}{Número (ordinal) da Sessão da CPI da Pandemia}
+#'   \item{falante}{Pessoa que está fazendo uso da palavra. Pode ser tanto os/as
+#'   Parlamentares como também as pessoas que estão sendo ouvidas}
+#'   \item{texto}{Teor do discurso proferido pela pessoa conforme registrado
+#'   pela equipe do Senado Federal.}
+#'   \item{data_sessao}{Data da Sessão em formato AAAA-MM-DD}
+#'   \item{horario_inicio}{Horário de início da fala em AAAA-MM-DD HH:MM}
+#'   \item{horario_fim}{Horário de fim da fala da pessoa em AAAA-MM-DD HH:MM}
+#'   \item{horario_duracao}{Duração, contada como a diferença entre o horário de
+#'   de início e o horário final da fala. Formato: AAAA-MM-DD HH:MM}
+#'   \item{pela_ordem}{Se a fala foi feita "pela ordem"}
+#'   \item{questao_ordem}{Se a fala foi feita endereçando questão de ordem}
+#'   \item{fora_microfone}{Se a fala foi realizada fora do microfone}
+#'   \item{responder_qordem}{Se a fala era resposta à questão de ordem}
+#'   \item{por_videoconferencia}{Se há notação de que a fala foi feita por
+#'   videoconferência}
+#'   \item{para_interpelar}{Se há registro de que a fala foi realizada para
+#'   interpelar a pessoa que está testemunhando}
+#'   \item{para_expor}{Se há sinalização de que a fala foi feita na qualidade de
+#'   expositora.}
+#'   \item{para_depor}{Se há sinalização de que a fala foi proferida na qualidade
+#'   de depoente}
+#'   \item{bloco_parlamentar}{Bloco parlamentar, se houver, a que está vinculado o
+#'   Parlamenter. Pode ser NA nos casos de não se tratar de Senador/a ou de ser
+#'   Senador/a independente.}
+#'   \item{como_presidente}{Se a fala foi feita por parlamentar no exercício da
+#'   Presidência da Sessão, ainda que temporária.}
+#'   \item{partido_sigla}{Sigla do Partido político a qual o/a Parlamentar está
+#'   vinculado. Será NA especialmente nos casos em que não se tratar de Senador/a.}
+#'   \item{partido_uf}{Partido político de origem do/a Parlamentar}
+#' }
+#' @source \url{www.senado.leg.br}
+"discursos_cpi"
