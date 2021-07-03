@@ -18,6 +18,7 @@ base <- readr::read_rds("data-raw/base_suja.rds")
 
 remover <- c("Para questão de ordem\\.", "Pela ordem\\.",
              "Fora do microfone\\.", "Bloco Parlamentar.*\\/",
+             "Bloco",
              "Para responder questão de ordem\\.", "Por videoconferência\\.",
              "Para interpelar\\.", "Para expor\\.", "PRESIDENTE ",
              "Para depor\\.", "Para breve comunicação\\.",
