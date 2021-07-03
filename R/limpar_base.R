@@ -9,13 +9,9 @@ library(magrittr)
 library(tibble)
 
 
-# montar a base -----------------------------------------------------------
-base <- purrr::map_dfr(
-  lista_html,
-  limpar_discursos_sessao
-) %>%
-  dplyr::arrange(numero_sessao)
+# carregar a base suja ----------------------------------------------------
 
+base <- readr::read_rds("data-raw/base_suja.rds")
 
 # expressões a serem removidas --------------------------------------------
 # do campo falante
@@ -69,3 +65,7 @@ base_limpa <- base_limpa %>%
                   sep = " - ")
 
 
+# exportar ----------------------------------------------------------------
+
+usethis::use_directory("data")
+readr::write_rds(base_limpa, "data/base_discursos_cpi.rds")

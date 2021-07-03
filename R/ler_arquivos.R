@@ -158,13 +158,17 @@ limpar_discursos_sessao <- function(arquivo) {
 }
 
 
+# iterar e gerar base -----------------------------------------------------
 
-#######
-# purrr::map_dfr(
-#   lista_html,
-#   ler_infos_sessao
-# ) %>%
-#   dplyr::arrange(numero_sessao)
+base <- purrr::map_dfr(
+  lista_html,
+  limpar_discursos_sessao
+) %>%
+  dplyr::arrange(numero_sessao)
 
+
+# exportar ----------------------------------------------------------------
+
+readr::write_rds(base, "data-raw/base_suja.rds")
 
 
