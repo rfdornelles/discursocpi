@@ -64,9 +64,33 @@ base_limpa <- base_limpa %>%
   tidyr::separate(col = partido,
                   into = c("partido_sigla", "partido_uf"),
                   sep = " - ")
+
+
+# acrescentar dados -------------------------------------------------------
+
+# acrescentar gênero
+base_limpa <- base_limpa %>%
+  dplyr::mutate(
+    genero = genderBR::get_gender(abjutils::rm_accent(falante)),
+    genero = dplyr::if_else(genero == "Female", "Feminino",
+                            "Masculino",
+                            # os nomes NA eram de homens
+                            "Masculino")
+  )
+
+# se é ou não parlamentar do Senado
+base_limpa <- base_limpa %>%
+  dplyr::mutate(
+    # padronizar Osmar Terra que aparece às vezes com partido
+    partido_sigla = dplyr::if_else(falante == "OSMAR TERRA",
+                                   NA_character_,
+                                   partido_sigla),
+    senado = dplyr::if_else(is.na(partido_sigla), FALSE, TRUE, FALSE)
+  )
+
+# exportar ----------------------------------------------------------------
 # salvar com nome melhor
 discursos_cpi <- base_limpa
 
-# exportar ----------------------------------------------------------------
 
 usethis::use_data(discursos_cpi, overwrite = TRUE, version = 3)
