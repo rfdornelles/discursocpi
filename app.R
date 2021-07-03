@@ -174,7 +174,8 @@ ui <- dashboardPage(
           selectInput(
             inputId = "seletor_grafico_tempo_fala",
             label = "Selecione o recorte de análise",
-            choices = c("Por papel", "Por gênero", "Por partido")
+            choices = c("Por papel", "Por gênero", "Por gênero e por papel",
+                         "Por partido", "Por partido e por gênero")
           ),
           br(),
           plotOutput(
@@ -408,7 +409,142 @@ server <- function(input, output, session) {
 
   output$grafico_tempo_fala  <- renderPlot({
 
+# seletor_grafico_tempo_fala <- c("Por papel", "Por gênero", "Por gênero e por papel",
+#                                 "Por partido", "Por partido e por gênero")[1]
 
+    # "Por papel"
+  if (input$seletor_grafico_tempo_fala == "Por papel") {
+
+  discursos_cpi %>%
+      dplyr::mutate(
+        papel = dplyr::case_when(
+          senado == FALSE ~ "Depoente/Convidado",
+          como_presidente == TRUE ~ "Presidindo Sessão",
+          senado == TRUE ~ "Senador/a",
+          TRUE ~ NA_character_
+        )
+      ) %>%
+      dplyr::group_by(papel) %>%
+      dplyr::summarise(
+        tempo_fala = sum(horario_duracao, na.rm = TRUE) / 60
+      ) %>%
+      ggplot(aes(x = papel, y = tempo_fala, fill = papel)) +
+      geom_col(show.legend = FALSE) +
+      theme_classic() +
+      labs(
+        title = "Pelo papel na Comissão",
+        subtitle = "no momento da fala",
+        x = "Papel exercido",
+        y = "Tempo de fala"
+      )
+
+  }
+
+    # "Por gênero"
+  if (input$seletor_grafico_tempo_fala == "Por gênero") {
+
+    discursos_cpi %>%
+      dplyr::group_by(genero) %>%
+      dplyr::summarise(
+        tempo_fala = sum(horario_duracao, na.rm = TRUE) / 60
+      ) %>%
+      ggplot(aes(x = genero, y = tempo_fala, fill = genero)) +
+      geom_col(show.legend = FALSE) +
+      theme_classic() +
+      labs(
+        title = "Conforme o gênero",
+       # subtitle = "no momento da fala",
+        x = "Papel exercido",
+        y = "Tempo de fala"
+      )
+
+  }
+
+# "Por gênero e por papel"
+if (input$seletor_grafico_tempo_fala == "Por gênero e por papel") {
+
+discursos_cpi %>%
+  dplyr::mutate(
+    papel = dplyr::case_when(
+      senado == FALSE ~ "Depoente/Convidado",
+      como_presidente == TRUE ~ "Presidindo Sessão",
+      senado == TRUE ~ "Senador/a",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  dplyr::group_by(papel, genero) %>%
+  dplyr::summarise(
+    tempo_fala = sum(horario_duracao, na.rm = TRUE) / 60
+  ) %>%
+  ggplot(aes(x = papel, y = tempo_fala, fill = genero)) +
+  geom_col(position = "dodge") +
+  theme_classic() +
+  labs(
+    title = "Pelo papel na Comissão e por gênero",
+    subtitle = "no momento da fala",
+    x = "Papel exercido (no momento da fala)",
+    y = "Tempo de fala",
+    fill = "Gênero"
+  )
+
+}
+
+    # "Por partido"
+
+if (input$seletor_grafico_tempo_fala == "Por partido") {
+
+  discursos_cpi %>%
+    dplyr::filter(!is.na(partido_sigla)) %>%
+    dplyr::group_by(partido_sigla) %>%
+    dplyr::summarise(
+      tempo_fala = sum(horario_duracao, na.rm = TRUE) / 60
+    ) %>%
+    dplyr::mutate(
+      partido_sigla = forcats::fct_reorder(partido_sigla, tempo_fala,
+                                           .desc = TRUE)
+    ) %>%
+  ggplot(aes(x = partido_sigla, y = tempo_fala, fill = partido_sigla)) +
+    geom_col(position = "dodge", show.legend = FALSE) +
+    theme_classic() +
+    labs(
+      title = "Por partido",
+      subtitle = "apenas Senadores/as",
+      x = "Partido",
+      y = "Tempo de fala",
+      fill = "Gênero"
+    )  +
+    theme(
+      axis.text.x = element_text(angle = 45, vjust = 0.5))
+
+}
+    # "Por partido e por gênero
+
+if (input$seletor_grafico_tempo_fala == "Por partido e por gênero") {
+
+  discursos_cpi %>%
+    dplyr::filter(!is.na(partido_sigla)) %>%
+    dplyr::group_by(partido_sigla, genero) %>%
+    dplyr::summarise(
+      tempo_fala = sum(horario_duracao, na.rm = TRUE) / 60
+    ) %>%
+    dplyr::mutate(
+      partido_sigla = forcats::fct_reorder(partido_sigla, tempo_fala,
+                                           .desc = TRUE)
+    ) %>%
+    ggplot(aes(x = partido_sigla, y = tempo_fala, fill = genero)) +
+    geom_col(position = "dodge") +
+    theme_classic() +
+    labs(
+      title = "Por partido e por gênero",
+      subtitle = "apenas Senadores/as",
+      x = "Partido",
+      y = "Tempo de fala",
+      fill = "Gênero"
+    )  +
+    theme(
+      axis.text.x = element_text(angle = 45, vjust = 0.5))
+
+}
 
   })
 
