@@ -10,6 +10,7 @@ library(tibble)
 library(shiny)
 library(shinydashboard)
 library(htmlwidgets)
+library(ggplot2)
 
 
 # Base --------------------------------------------------------------------
@@ -110,7 +111,10 @@ ui <- dashboardPage(
             width = 12,
             h1("Visão Geral da CPI"),
             br(),
-            "Texto bla bla bla bla bla"
+            "Texto bla bla bla bla bla",
+            br(),
+            br(),
+            br()
           )
         ),
         fluidRow(
@@ -219,9 +223,17 @@ server <- function(input, output, session) {
   # quantidade de sessões
   output$quantidade_de_sessoes <- renderValueBox({
 
+    valor_quantidade <- discursos_cpi %>%
+      dplyr::pull(numero_sessao) %>%
+      as.numeric() %>%
+      sort(decreasing = TRUE) %>%
+      head(1)
 
     valueBox(
-
+      value = valor_quantidade,
+      subtitle = "Quantidade de sessões",
+      color = "teal",
+      icon = icon("calendar-alt")
     )
 
   })
@@ -230,8 +242,17 @@ server <- function(input, output, session) {
 
   output$primeira_sessao <-renderValueBox({
 
-    valueBox(
+    data_inicio = discursos_cpi %>%
+      dplyr::arrange(data_sessao) %>%
+      head(1) %>%
+      dplyr::pull(data_sessao) %>%
+      format("%d/%m/%y")
 
+    valueBox(
+      value = data_inicio,
+      subtitle = "Primeira sessão",
+      icon = icon("play-circle"),
+      color = "olive"
     )
 
   })
@@ -240,8 +261,17 @@ server <- function(input, output, session) {
 
   output$ultima_sessao <- renderValueBox({
 
-    valueBox(
+    data_fim = discursos_cpi %>%
+      dplyr::arrange(data_sessao) %>%
+      tail(1) %>%
+      dplyr::pull(data_sessao) %>%
+      format("%d/%m/%y")
 
+    valueBox(
+      value = data_fim,
+      subtitle = "Última sessão",
+      icon = icon("bookmark"),
+      color = "light-blue"
     )
 
   })
@@ -250,7 +280,23 @@ server <- function(input, output, session) {
 
   output$contagem_regressiva <- renderValueBox({
 
+    prazo_final <- lubridate::ymd_hms("2021-08-07 23:59:59",
+                                      tz = "America/Sao_Paulo")
+
+    tempo <- Sys.time()
+
+    falta <- difftime(prazo_final, tempo, units = "hours") %>%
+      as.numeric()
+
+    dias <- falta %/% 24
+
+    horas <- round(falta %% 24, digits = 0)
+
     valueBox(
+      value = glue::glue("{dias} dias"),
+      subtitle = "Para o fim da CPI",
+      icon = icon("hourglass-start"),
+      color = "orange"
 
     )
 
@@ -261,19 +307,38 @@ server <- function(input, output, session) {
   # total_horas_faladas
   output$total_horas_faladas <- renderInfoBox({
 
+    tempo <- discursos_cpi %>%
+      dplyr::summarise(
+        tempo = sum(horario_duracao, na.rm = TRUE)
+      ) %>%
+      dplyr::pull() %>%
+      lubridate::seconds()
 
+    # tempo %/% lubridate::hours(1)
     infoBox(
-
-
+      title = "Tempo de discuros",
+      value = glue::glue("{tempo / lubridate::hours(1)} horas de fala"),
+      subtitle = glue::glue("equivalente a mais de {tempo %/% lubridate::days(1)} dias"),
+      icon = icon("comments"),
+      color = "maroon",
+      fill = TRUE
     )
   })
 
   # quantidade_total_falantes
   output$quantidade_total_falantes  <- renderInfoBox({
 
+    quantidade_pessoas <- discursos_cpi %>%
+      dplyr::distinct(falante) %>%
+      dplyr::count()
 
     infoBox(
-
+      title = "Participações",
+      value = glue::glue("{quantidade_pessoas} pessoas falaram na CPI"),
+      subtitle = "entre depoentes e parlamentares",
+      icon = icon("users"),
+      color = "purple",
+      fill = TRUE
 
     )
   })
@@ -283,8 +348,56 @@ server <- function(input, output, session) {
 
   # grafico_distribuicao_sessoes -
     #input: seletor_grafico_distribuicao_sessoes
+ output$grafico_distribuicao_sessoes <- renderPlot({
 
-  output$grafico_distribuicao_sessoes <- renderPlot({
+   base <- discursos_cpi
+
+   if (input$seletor_grafico_distribuicao_sessoes == "Por dias da semana") {
+
+     base <- base %>%
+       dplyr::mutate(
+         data_sessao = lubridate::wday(
+           data_sessao,
+           label = TRUE,
+           abbr = FALSE)
+       )  %>%
+       dplyr::group_by(data_sessao) %>%
+       dplyr::summarise(
+         tempo_fala = mean(horario_duracao, na.rm = TRUE)
+       )
+
+     grafico <- base %>%
+       ggplot(aes(x = data_sessao, y = tempo_fala)) +
+       geom_col()
+
+   } else {
+
+      base <- base %>%
+       dplyr::group_by(data_sessao) %>%
+       dplyr::summarise(
+         tempo_fala = sum(horario_duracao, na.rm = TRUE)
+       )
+
+
+      grafico <- base %>%
+        ggplot(aes(x = data_sessao, y = tempo_fala)) +
+        geom_line() +
+        theme(
+          axis.text.x = element_text(angle = 45, vjust = 0.5)) +
+        scale_x_date(date_breaks = "2 day", date_labels = "%d/%m")
+
+   }
+
+   ## gráfico em si
+
+   theme_set(theme_classic())
+
+   grafico +
+     labs(
+       title = "Tempo de fala na sessões",
+       x = "Dia da sessão",
+       y = "Tempo de fala"
+     )
 
 
 
