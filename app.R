@@ -407,15 +407,14 @@ server <- function(input, output, session) {
   # grafico_tempo_fala
     #input: seletor_grafico_tempo_fala
 
-  output$grafico_tempo_fala  <- renderPlot({
+output$grafico_tempo_fala  <- renderPlot({
 
-# seletor_grafico_tempo_fala <- c("Por papel", "Por gênero", "Por gênero e por papel",
-#                                 "Por partido", "Por partido e por gênero")[1]
+    seletor_grafico_tempo_fala <- input$seletor_grafico_tempo_fala
 
     # "Por papel"
-  if (input$seletor_grafico_tempo_fala == "Por papel") {
+  if (seletor_grafico_tempo_fala == "Por papel") {
 
-  discursos_cpi %>%
+  grafico_tempo_fala <- discursos_cpi %>%
       dplyr::mutate(
         papel = dplyr::case_when(
           senado == FALSE ~ "Depoente/Convidado",
@@ -441,9 +440,9 @@ server <- function(input, output, session) {
   }
 
     # "Por gênero"
-  if (input$seletor_grafico_tempo_fala == "Por gênero") {
+  if (seletor_grafico_tempo_fala == "Por gênero") {
 
-    discursos_cpi %>%
+    grafico_tempo_fala <- discursos_cpi %>%
       dplyr::group_by(genero) %>%
       dplyr::summarise(
         tempo_fala = sum(horario_duracao, na.rm = TRUE) / 60
@@ -461,9 +460,9 @@ server <- function(input, output, session) {
   }
 
 # "Por gênero e por papel"
-if (input$seletor_grafico_tempo_fala == "Por gênero e por papel") {
+if (seletor_grafico_tempo_fala == "Por gênero e por papel") {
 
-discursos_cpi %>%
+  grafico_tempo_fala <- discursos_cpi %>%
   dplyr::mutate(
     papel = dplyr::case_when(
       senado == FALSE ~ "Depoente/Convidado",
@@ -491,9 +490,9 @@ discursos_cpi %>%
 
     # "Por partido"
 
-if (input$seletor_grafico_tempo_fala == "Por partido") {
+if (seletor_grafico_tempo_fala == "Por partido") {
 
-  discursos_cpi %>%
+  grafico_tempo_fala <- discursos_cpi %>%
     dplyr::filter(!is.na(partido_sigla)) %>%
     dplyr::group_by(partido_sigla) %>%
     dplyr::summarise(
@@ -519,9 +518,9 @@ if (input$seletor_grafico_tempo_fala == "Por partido") {
 }
     # "Por partido e por gênero
 
-if (input$seletor_grafico_tempo_fala == "Por partido e por gênero") {
+if (seletor_grafico_tempo_fala == "Por partido e por gênero") {
 
-  discursos_cpi %>%
+  grafico_tempo_fala <-  discursos_cpi %>%
     dplyr::filter(!is.na(partido_sigla)) %>%
     dplyr::group_by(partido_sigla, genero) %>%
     dplyr::summarise(
@@ -546,6 +545,7 @@ if (input$seletor_grafico_tempo_fala == "Por partido e por gênero") {
 
 }
 
+    grafico_tempo_fala
   })
 
 ##########  Analisar discurso
