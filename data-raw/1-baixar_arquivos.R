@@ -25,7 +25,8 @@ url_base <- "https://legis.senado.leg.br/dadosabertos/"
 
 # funções -----------------------------------------------------------------
 
-usethis::use_directory("data-raw")
+usethis::use_directory("data-raw/xml")
+usethis::use_directory("data-raw/html")
 
 # baixar_reunioes ---------------------------------------------------------
 baixar_reunioes_cpi <- function(mes,
@@ -45,7 +46,7 @@ baixar_reunioes_cpi <- function(mes,
     query = query,
     httr::accept_xml(),
     httr::write_disk(
-      path = glue::glue("data-raw/reunioes_{mes}.xml"),
+      path = glue::glue("data-raw/xml/reunioes_{mes}.xml"),
       overwrite = TRUE
     ),
     httr::progress()
@@ -70,7 +71,7 @@ xml2::read_xml(arquivo) %>%
 # baixar os discursos
 baixar_discursos <- function(reuniao, prog, force = FALSE) {
 
-  arquivo_destino <- glue::glue("data-raw/discursos_{reuniao}.html")
+  arquivo_destino <- glue::glue("data-raw/html/discursos_{reuniao}.html")
 
   if (file.exists(arquivo_destino)) {
 
@@ -139,7 +140,7 @@ purrr::walk(.x = 4:7,
             .f = baixar_reunioes_cpi)
 
 # lista com arquivos .xml das reuniões
-lista_xml <- fs::dir_info("data-raw/", regexp = ".xml$") %>%
+lista_xml <- fs::dir_info("data-raw/xml/", regexp = ".xml$") %>%
   purrr::pluck("path")
 
 # baixar os discursos

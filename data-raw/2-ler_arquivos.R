@@ -11,7 +11,7 @@ library(tibble)
 
 # lista de arquivos -------------------------------------------------------
 
-lista_html <- fs::dir_info("data-raw", regex = "\\.html$") %>%
+lista_html <- fs::dir_info("data-raw/html/", regex = "\\.html$") %>%
   dplyr::pull(path)
 
 
@@ -169,6 +169,6 @@ base <- purrr::map_dfr(
 
 # exportar ----------------------------------------------------------------
 
-readr::write_rds(base, "data-raw/base_suja.rds")
+readr::write_rds(base, "data-raw/base_suja.rds", compress = "gz")
 
 

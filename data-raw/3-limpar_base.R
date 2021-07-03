@@ -1,6 +1,6 @@
 ## Rodrigo Dornelles - Fri Jul 02 22:45:40 2021
 ##
-## Objetivo:
+## Objetivo: limpeza dos discursos e nome dos oradores
 
 
 # Pacotes -----------------------------------------------------------
@@ -68,4 +68,6 @@ base_limpa <- base_limpa %>%
 # exportar ----------------------------------------------------------------
 
 usethis::use_directory("data")
-readr::write_rds(base_limpa, "data/base_discursos_cpi.rds")
+readr::write_rds(base_limpa,
+                 "data/base_discursos_cpi.rds",
+                 version = 3, compress = "gz")
