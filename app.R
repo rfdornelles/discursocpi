@@ -11,11 +11,13 @@ library(shiny)
 library(shinydashboard)
 library(htmlwidgets)
 library(ggplot2)
+library(rmarkdown)
 
 
 # Base --------------------------------------------------------------------
 
 load("data/discursos_cpi.rda")
+load("data/tabela_fotos.rda")
 
 # ideia -------------------------------------------------------------------
 
@@ -57,23 +59,14 @@ ui <- dashboardPage(
 
       # Visão Geral
       menuItem("Visão Geral", tabName = "visao_geral"),
-      # quantidade de sessões
-      # total de horas
-      # quantidade de pessoas que falou
-      # perfil
 
       # Analisar discurso
       menuItem("Discursos", tabName = "analisar_discursos"),
-      # o que a pessoa mais falou
-      # quantidade de horas que a pessoa falou
-      # palavras mais faladas
-      # sessão em que mais falou
 
       # Analisar sessão
       menuItem("Sessões", tabName = "analisar_sessoes"),
       # duração
       # quantas falaram
-      #
 
       # Analisar termo
       menuItem("Termos", tabName = "analisar_termos")
@@ -89,6 +82,8 @@ ui <- dashboardPage(
     tabItems(
       # Analisar discursos da CPI
       # 1. Apresentação
+
+# apresentacao ------------------------------------------------------------
       tabItem(
         tabName = "intro",
         fluidRow(
@@ -100,6 +95,8 @@ ui <- dashboardPage(
         )
       ),
 
+
+# visão geral -------------------------------------------------------------
 
       # Visão Geral
       tabItem(
@@ -160,7 +157,8 @@ ui <- dashboardPage(
           selectInput(
             inputId = "seletor_grafico_distribuicao_sessoes",
             label = "Selecione o tipo de análise",
-            choices = c("Por datas", "Por dias da semana")
+            choices = c("Por datas", "Por dias da semana"),
+            width = "100%"
           ),
           br(),
           plotOutput(
@@ -175,7 +173,8 @@ ui <- dashboardPage(
             inputId = "seletor_grafico_tempo_fala",
             label = "Selecione o recorte de análise",
             choices = c("Por papel", "Por gênero", "Por gênero e por papel",
-                         "Por partido", "Por partido e por gênero")
+                         "Por partido", "Por partido e por gênero"),
+            width = "100%"
           ),
           br(),
           plotOutput(
@@ -188,9 +187,137 @@ ui <- dashboardPage(
         ),
 
 
+# discursos ---------------------------------------------------------------
+
       # Analisar discurso
       tabItem(
-        tabName = "analisar_discursos"),
+        tabName = "analisar_discursos",
+        fluidRow(
+          column(
+            width = 12,
+            h1("Análisar discurso conforme ordador(a)"),
+            br(),
+            "Blab bla bla bla bla",
+            br(),
+            br(),
+            br(),
+          )
+        ),
+        fluidRow(
+          box(
+            width = 12,
+            "Filtros",
+            br()
+            ),
+
+            # selecionar papel da pessoa
+      box(
+        width = 4,
+        selectInput(
+          inputId = "select_discurso_papel_pessoa",
+          label = "Selecione o papel exercido",
+          choices = unique(discursos_cpi$papel),
+          width = "100%",
+          multiple = TRUE
+        )
+      ),
+            # selecionar gênero
+      box(
+        width = 4,
+        selectInput(
+          inputId = "select_discurso_genero",
+          label = "Selecione o gênero",
+          choices = "Carregando...",
+          width = "100%",
+          multiple = TRUE
+        )
+      ),
+            # selecionar partido
+      box(
+        width = 4,
+        selectInput(
+          inputId = "select_discurso_partido",
+          label = "Selecione um partido (se cabível)",
+          choices = "Carregando...",
+          width = "100%",
+          multiple = TRUE
+        )
+        )
+        ),
+      ## nova linha
+      fluidRow(
+        box(
+          width = 12,
+          selectInput(
+            inputId = "select_pessoa_selecionada",
+            label = "Selecione alguém que participou da CPI",
+            choices = "Carregando..."
+          )
+        )
+      ),
+
+      ## nova linha
+        fluidRow(
+          # dados da pessoa
+          box(
+            width = 8,
+            tableOutput(
+              outputId = "tabela_dados_pessoa"
+            )
+          ),
+
+        # foto
+        box(
+          width = 4,
+          imageOutput(
+            outputId = "foto_pessoa_selecionada"
+          )
+        )
+        ),
+
+      ## nova linha
+      fluidRow(
+
+        # % fala nas sessoes
+        valueBoxOutput(
+          width = 3,
+          outputId = "pct_fala_sessoes"
+        ),
+        # % fala no total
+        valueBoxOutput(
+          width = 3,
+          outputId = "pct_fala_total"
+        ),
+        # % fala no papel
+        valueBoxOutput(
+          width = 3,
+          outputId = "pct_fala_papel"
+        ),
+        # % fala no genero
+        valueBoxOutput(
+          width = 3,
+          outputId = "pct_fala_genero"
+        )
+      ),
+
+      ## nova linha
+      fluidRow(
+
+        ## grafico / tabela
+
+
+        ## grafico / nuvem palavras
+      ),
+
+      ## nova linha
+      fluidRow(
+
+        ## tabela - tf_idf
+
+      )
+
+      ),
+
       # o que a pessoa mais falou
       # quantidade de horas que a pessoa falou
       # palavras mais faladas
@@ -415,14 +542,6 @@ output$grafico_tempo_fala  <- renderPlot({
   if (seletor_grafico_tempo_fala == "Por papel") {
 
   grafico_tempo_fala <- discursos_cpi %>%
-      dplyr::mutate(
-        papel = dplyr::case_when(
-          senado == FALSE ~ "Depoente/Convidado",
-          como_presidente == TRUE ~ "Presidindo Sessão",
-          senado == TRUE ~ "Senador/a",
-          TRUE ~ NA_character_
-        )
-      ) %>%
       dplyr::group_by(papel) %>%
       dplyr::summarise(
         tempo_fala = sum(horario_duracao, na.rm = TRUE) / 60
@@ -463,14 +582,6 @@ output$grafico_tempo_fala  <- renderPlot({
 if (seletor_grafico_tempo_fala == "Por gênero e por papel") {
 
   grafico_tempo_fala <- discursos_cpi %>%
-  dplyr::mutate(
-    papel = dplyr::case_when(
-      senado == FALSE ~ "Depoente/Convidado",
-      como_presidente == TRUE ~ "Presidindo Sessão",
-      senado == TRUE ~ "Senador/a",
-      TRUE ~ NA_character_
-    )
-  ) %>%
   dplyr::group_by(papel, genero) %>%
   dplyr::summarise(
     tempo_fala = sum(horario_duracao, na.rm = TRUE) / 60
