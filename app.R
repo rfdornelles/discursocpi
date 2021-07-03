@@ -9,6 +9,7 @@ library(magrittr)
 library(tibble)
 library(shiny)
 library(shinydashboard)
+library(htmlwidgets)
 
 
 # Base --------------------------------------------------------------------
@@ -16,26 +17,6 @@ library(shinydashboard)
 load("data/discursos_cpi.rda")
 
 # ideia -------------------------------------------------------------------
-
-# Analisar discursos da CPI
-# 1. Apresentação
-# 2. Quantas sessões
-  # duração
-  # periodicidade
-# 3. Discursos
-  # por bloco
-  # por alinhamento
-# 4. parlamentares
-  # quantidade de sessões em que falou
-  # quantidade de tempo
-# 5. depoentes
-# 6. social
-  # partido
-  # uf
-  # gênero
-  # alinhamento
-# 7. nuvem de palavras
-  # por
 
 # Visão geral
   # quantidade de sessões
@@ -123,16 +104,80 @@ ui <- dashboardPage(
       tabItem(
         # começo - visão geral
 
-        tabName = "visao_geral"
+        tabName = "visao_geral",
+        fluidRow(
+          column(
+            width = 12,
+            h1("Visão Geral da CPI"),
+            br(),
+            "Texto bla bla bla bla bla"
+          )
+        ),
+        fluidRow(
+          # fileira de boxes 1
+          valueBoxOutput(
+              outputId = "quantidade_de_sessoes",
+              width = 3
+            ),
 
-        # quantidade de sessões
+          valueBoxOutput(
+            outputId = "primeira_sessao",
+            width = 3
+          ),
 
-        # total de horas
+          valueBoxOutput(
+            outputId = "ultima_sessao",
+            width = 3
+          ),
 
-        # quantidade de pessoas que falou
+          valueBoxOutput(
+            outputId = "contagem_regressiva",
+            width = 3
+          )
+          ),
+      # segunda fileira
+      fluidRow(
+        infoBoxOutput(
+          width = 6,
+          outputId = "total_horas_faladas"
+        ),
+        infoBoxOutput(
+          width = 6,
+          outputId = "quantidade_total_falantes"
+        )
+      ),
 
-        # perfil
-
+      # terceira fileira
+      fluidRow(
+        column(
+          width = 6,
+          h2("Distribuição das sessões"),
+          br(),
+          selectInput(
+            inputId = "seletor_grafico_distribuicao_sessoes",
+            label = "Selecione o tipo de análise",
+            choices = c("Por datas", "Por dias da semana")
+          ),
+          br(),
+          plotOutput(
+            outputId = "grafico_distribuicao_sessoes"
+          )
+        ),
+        column(
+          width = 6,
+          h2("Tempo de fala"),
+          br(),
+          selectInput(
+            inputId = "seletor_grafico_tempo_fala",
+            label = "Selecione o recorte de análise",
+            choices = c("Por papel", "Por gênero", "Por partido")
+          ),
+          br(),
+          plotOutput(
+            outputId = "grafico_tempo_fala"
+          )
+        )
+      )
 
         # fim - visão geral
         ),
@@ -167,6 +212,100 @@ ui <- dashboardPage(
 
 
 server <- function(input, output, session) {
+
+##########  Visão geral
+#### primeira fila - valueBox
+
+  # quantidade de sessões
+  output$quantidade_de_sessoes <- renderValueBox({
+
+
+    valueBox(
+
+    )
+
+  })
+
+  # primeira sessão
+
+  output$primeira_sessao <-renderValueBox({
+
+    valueBox(
+
+    )
+
+  })
+
+  # última sessão
+
+  output$ultima_sessao <- renderValueBox({
+
+    valueBox(
+
+    )
+
+  })
+
+  # contagem regressiva
+
+  output$contagem_regressiva <- renderValueBox({
+
+    valueBox(
+
+    )
+
+  })
+
+##### segunda fila - infoBox
+
+  # total_horas_faladas
+  output$total_horas_faladas <- renderInfoBox({
+
+
+    infoBox(
+
+
+    )
+  })
+
+  # quantidade_total_falantes
+  output$quantidade_total_falantes  <- renderInfoBox({
+
+
+    infoBox(
+
+
+    )
+  })
+
+
+##### terceira fila - gráficos
+
+  # grafico_distribuicao_sessoes -
+    #input: seletor_grafico_distribuicao_sessoes
+
+  output$grafico_distribuicao_sessoes <- renderPlot({
+
+
+
+  })
+
+  # grafico_tempo_fala
+    #input: seletor_grafico_tempo_fala
+
+  output$grafico_tempo_fala  <- renderPlot({
+
+
+
+  })
+
+##########  Analisar discurso
+
+##########  Analisar sessão
+
+##########  Analisar termo
+
+
 
 
 }
