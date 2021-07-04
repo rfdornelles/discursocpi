@@ -352,16 +352,15 @@ ui <- dashboardPage(
             dateRangeInput(
               inputId = "sessoes_periodo_datas",
               label = "Selecione o período de tempo:",
-              start = min(discursos_cpi$data_sessao),
-              end = max(discursos_cpi$data_sessao),
-              format = "dd-mm-yy",
+              min = min(discursos_cpi$data_sessao),
+              max = max(discursos_cpi$data_sessao),
+              format = "dd/mm/yy",
               language = "pt-BR",
-              autoclose = TRUE
+              autoclose = TRUE,
+              separator = "até"
             ),
           ),
-          column(
-            width = 6,
-            valueBoxOutput(
+          valueBoxOutput(
               width = 3,
               outputId = "quantidade_sessoes_periodo"
             ),
@@ -369,7 +368,6 @@ ui <- dashboardPage(
               width = 3,
               outputId = "tempo_reuniao_periodo"
             )
-          )
         ),
 
 
@@ -881,6 +879,155 @@ output$tabela_tf_idf <- reactable::renderReactable({
 
 
 ##########  Analisar sessão
+
+### reativo sessoes_periodo_datas
+
+filtrar_sessoes_periodo <- reactive({
+
+  discursos_cpi %>%
+    dplyr::filter(
+      data_sessao >= as.Date(input$sessoes_periodo_datas[1]),
+      data_sessao <= as.Date(input$sessoes_periodo_datas[2])
+    )
+
+})
+
+
+### quantidade_sessoes_periodo
+output$quantidade_sessoes_periodo <- renderValueBox({
+
+  valor = filtrar_sessoes_periodo() %>%
+    dplyr::distinct(numero_sessao) %>%
+    dplyr::pull() %>%
+    length()
+
+  valueBox(
+    value = valor,
+    subtitle = dplyr::if_else(
+      valor == 1,
+      "sessão no período",
+      "sessões no período"),
+    icon = icon("calendar-check"),
+    color = "light-blue"
+  )
+
+})
+
+
+### tempo_reuniao_periodo
+
+output$tempo_reuniao_periodo <- renderValueBox({
+
+  valor = filtrar_sessoes_periodo() %>%
+    dplyr::summarise(
+      tempo = sum(horario_duracao, na.rm = TRUE)
+    ) %>%
+    dplyr::pull(tempo) %>%
+    lubridate::seconds()
+
+  valueBox(
+    value = scales::number(
+      x = valor / lubridate::hours(1),
+      accuracy = 1,
+      suffix = " h",
+      big.mark = ".",
+      decimal.mark = ","),
+    subtitle = "de sessões no período",
+    icon = icon("stopwatch"),
+    color = "olive"
+  )
+
+})
+
+### tabela_presenca_sessoes
+
+output$tabela_presenca_sessoes <- renderReactable({
+
+  total_sessoes <- filtrar_sessoes_periodo() %>%
+    dplyr::distinct(numero_sessao) %>%
+    dplyr::pull() %>%
+    length()
+
+
+  tabela_presenca <- filtrar_sessoes_periodo() %>%
+  # discursos_cpi %>%
+    dplyr::select(numero_sessao, falante, horario_duracao,
+                  papel, partido_sigla, genero) %>%
+    dplyr::group_by(falante, papel, partido_sigla, genero) %>%
+    dplyr::summarise(
+      .groups = "drop",
+      tempo_fala = sum(horario_duracao, na.rm = T),
+      sessoes_presente = length(unique(numero_sessao))) %>%
+     dplyr::mutate(
+       pct_presenca = sessoes_presente / total_sessoes,
+       tempo_fala = lubridate::seconds(tempo_fala) / lubridate::minutes(1),
+       foto = falante
+     ) %>%
+    dplyr::select(foto, falante, tempo_fala, sessoes_presente,
+                  pct_presenca, papel, genero, partido_sigla)
+
+
+  tabela_presenca %>%
+    reactable(
+      showSortIcon = TRUE,
+      showSortable = TRUE,
+      sortable = TRUE,
+      pagination = TRUE,
+      showPagination = TRUE,
+      searchable = FALSE,
+      highlight = TRUE,
+      compact = TRUE,
+      minRows = 5,
+      defaultPageSize = 5,
+      defaultSorted = "tempo_fala",
+      defaultColDef = colDef(
+        align = "center",
+        na = "-",
+        format = colFormat(digits = 2)
+        ),
+      columns = list(
+        foto = colDef(
+           name = "", sortable = FALSE,
+           cell = function(value) {
+             image <- img(
+               src = retorna_foto(value),
+               height = "24px", alt = value)
+
+              tagList(div(
+              style = list(
+                display = "inline-block",
+                width = "45px"), image))}),
+        falante = colDef(name = "Participante",
+                         filterable = TRUE),
+        papel = colDef(name = "Atuação"),
+        partido_sigla = colDef(name = "Partido",
+                               filterable = TRUE),
+        genero = colDef(name = "Gênero"),
+        tempo_fala = colDef(name = "Tempo de fala",
+                            defaultSortOrder = "desc",
+                            format = colFormat(
+                              suffix = " min",
+                              digits = 0)),
+        sessoes_presente = colDef(name = "Sessões presentes",
+                                  format = colFormat(digits = 0)),
+        pct_presenca = colDef(name = "% presença",
+                              format = colFormat(digits = 1,
+                                                 percent = TRUE))
+      )
+    )
+
+
+
+})
+
+### grafico_sessoes_nuvem_palavras
+
+### tabela_sessao_ranking_palavras
+
+
+
+
+
 
 ##########  Analisar termo
 
