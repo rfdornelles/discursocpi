@@ -353,7 +353,9 @@ ui <- dashboardPage(
               inputId = "sessoes_periodo_datas",
               label = "Selecione o período de tempo:",
               min = min(discursos_cpi$data_sessao),
+              start = min(discursos_cpi$data_sessao),
               max = max(discursos_cpi$data_sessao),
+              end = max(discursos_cpi$data_sessao),
               format = "dd/mm/yy",
               language = "pt-BR",
               autoclose = TRUE,
@@ -963,8 +965,8 @@ output$tabela_presenca_sessoes <- renderReactable({
        tempo_fala = lubridate::seconds(tempo_fala) / lubridate::minutes(1),
        foto = falante
      ) %>%
-    dplyr::select(foto, falante, tempo_fala, sessoes_presente,
-                  pct_presenca, papel, genero, partido_sigla)
+    dplyr::select(foto, falante, partido_sigla,tempo_fala, sessoes_presente,
+                  pct_presenca, papel, genero)
 
 
   tabela_presenca %>%
@@ -1020,12 +1022,47 @@ output$tabela_presenca_sessoes <- renderReactable({
 
 })
 
+## reativo
+
+lista_palavras_usadas_sessoes <- reactive({
+
+  base_tokenizada  %>%
+    dplyr::filter(
+    data_sessao >= as.Date(input$sessoes_periodo_datas[1]),
+    data_sessao <= as.Date(input$sessoes_periodo_datas[2])
+  )
+
+})
 ### grafico_sessoes_nuvem_palavras
+
+output$grafico_sessoes_nuvem_palavras <- renderPlot({
+
+  req(input$sessoes_periodo_datas[1])
+
+  lista_palavras_usadas_sessoes() %>%
+    dplyr::select(termo) %>%
+    dplyr::count(termo, sort = TRUE) %>%
+    desenhar_nuvem(
+      qnt = 150, corMax = "#01044a", corMin = "#4dfff9") +
+    labs(title = glue::glue(
+"Nuvem de palavras usadas nas sessões \nentre {format(input$sessoes_periodo_datas[1], '%d/%m/%y')} e {format(input$sessoes_periodo_datas[2], '%d/%m/%y')}")
+    ) +
+    theme(plot.title = element_text(face = "bold",
+                                    size = 14,
+                                    hjust = 0.5))
+
+})
+
 
 ### tabela_sessao_ranking_palavras
 
+output$tabela_sessao_ranking_palavras <- renderReactable({
 
 
+
+
+
+})
 
 
 
