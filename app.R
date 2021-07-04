@@ -217,8 +217,7 @@ ui <- dashboardPage(
           selected = as.list(c("Senador/a", "Depoente/Convidado")),
           width = "100%"
         ),
-        br(),
-        br(),
+        br()
       ),
     # selecionar gênero
       box(
@@ -231,7 +230,6 @@ ui <- dashboardPage(
           selected = as.list(unique(discursos_cpi$genero)),
           width = "100%"
         ),
-        br(),
         br()
           ),
 
@@ -259,7 +257,7 @@ ui <- dashboardPage(
               inputId = "select_pessoa_selecionada",
               label = "Selecione alguém que participou da CPI",
               choices = "Carregando...",
-              width = "90%"
+              width = "90%",
             )
             ),
           column(width = 4,
