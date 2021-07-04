@@ -169,6 +169,8 @@ base <- purrr::map_dfr(
 
 # exportar ----------------------------------------------------------------
 
-readr::write_rds(base, "data-raw/base_suja.rds", compress = "gz")
+usethis::use_directory("data-raw/rds")
+
+readr::write_rds(base, "data-raw/rds/base_suja.rds", compress = "gz")
 
 

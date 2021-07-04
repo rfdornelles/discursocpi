@@ -160,10 +160,4 @@ lista_discursos_para_baixar %>%
 
 })
 
-# # teste
-# lista_html <- fs::dir_info("data-raw", regex = "\\.html$") %>%
-#   dplyr::select(path, size) %>%
-#   dplyr::arrange(size) %>%
-#   dplyr::pull(path)
-
 

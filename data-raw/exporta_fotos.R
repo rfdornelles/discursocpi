@@ -30,17 +30,19 @@ base_senado <- base_senado %>%
 # discursos_cpi %>%
 #   dplyr::filter(senado == FALSE) %>%
 #   dplyr::distinct(falante) %>%
-#   writexl::write_xlsx(path = "data-raw/lista_nao_senadores_tmp.xlsx")
+#   writexl::write_xlsx(path = "data-raw/xlsx/lista_nao_senadores_tmp.xlsx")
 
 
 # base_auxiliar -----------------------------------------------------------
 base_nao_senadores <- readxl::read_excel(
-  "data-raw/lista_nao_senadores_preenchida.xlsx"
+  "data-raw/xlsx/lista_nao_senadores_preenchida.xlsx"
   ) %>%
   janitor::clean_names()
 
-janitor::compare_df_cols_same(base_senado, base_nao_senadores)
+if (janitor::compare_df_cols_same(base_senado, base_nao_senadores)) {
 
 tabela_fotos <- dplyr::bind_rows(base_senado, base_nao_senadores)
 
 usethis::use_data(tabela_fotos, version = 3, overwrite = TRUE)
+
+}

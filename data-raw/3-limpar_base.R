@@ -11,7 +11,7 @@ library(tibble)
 
 # carregar a base suja ----------------------------------------------------
 
-base <- readr::read_rds("data-raw/base_suja.rds")
+base <- readr::read_rds("data-raw/rds/base_suja.rds")
 
 # expressões a serem removidas --------------------------------------------
 # do campo falante
@@ -129,4 +129,5 @@ base_limpa <- base_limpa %>%
 # salvar com nome melhor
 discursos_cpi <- base_limpa
 
-usethis::use_data(discursos_cpi, overwrite = TRUE, version = 3)
+usethis::use_data(discursos_cpi, overwrite = TRUE,
+                  version = 3, compress = "gzip")
