@@ -18,6 +18,7 @@ library(rmarkdown)
 
 load("data/discursos_cpi.rda")
 load("data/tabela_fotos.rda")
+source("R/auxiliares.R", encoding = "UTF-8")
 
 # ideia -------------------------------------------------------------------
 
@@ -269,7 +270,7 @@ ui <- dashboardPage(
         # foto
         box(
           width = 4,
-          imageOutput(
+          htmlOutput(
             outputId = "foto_pessoa_selecionada"
           )
         )
@@ -303,25 +304,38 @@ ui <- dashboardPage(
       ## nova linha
       fluidRow(
 
-        ## grafico / tabela
-
+        ## tabela
+        column(
+          width = 6,
+          tableOutput(
+            outputId = "tabela_tempo_por_sessao"
+          )
+        ),
 
         ## grafico / nuvem palavras
+        column(
+          width = 6,
+          plotOutput(
+            outputId = "nuvem_de_palavras"
+          )
+        )
       ),
 
       ## nova linha
       fluidRow(
 
         ## tabela - tf_idf
+        column(
+          width = 12,
+          tableOutput(
+            outputId = "tabela_tf_idf"
+          )
+        )
 
       )
 
       ),
-
-      # o que a pessoa mais falou
-      # quantidade de horas que a pessoa falou
-      # palavras mais faladas
-      # sessão em que mais falou
+##############
 
       # Analisar sessão
       tabItem(
@@ -604,7 +618,7 @@ if (seletor_grafico_tempo_fala == "Por gênero e por papel") {
 if (seletor_grafico_tempo_fala == "Por partido") {
 
   grafico_tempo_fala <- discursos_cpi %>%
-    dplyr::filter(!is.na(partido_sigla)) %>%
+    dplyr::filter(partido_sigla != "Sem partido/Não se aplica") %>%
     dplyr::group_by(partido_sigla) %>%
     dplyr::summarise(
       tempo_fala = sum(horario_duracao, na.rm = TRUE) / 60
@@ -632,7 +646,7 @@ if (seletor_grafico_tempo_fala == "Por partido") {
 if (seletor_grafico_tempo_fala == "Por partido e por gênero") {
 
   grafico_tempo_fala <-  discursos_cpi %>%
-    dplyr::filter(!is.na(partido_sigla)) %>%
+    dplyr::filter(partido_sigla != "Sem partido/Não se aplica") %>%
     dplyr::group_by(partido_sigla, genero) %>%
     dplyr::summarise(
       tempo_fala = sum(horario_duracao, na.rm = TRUE) / 60
@@ -660,6 +674,116 @@ if (seletor_grafico_tempo_fala == "Por partido e por gênero") {
   })
 
 ##########  Analisar discurso
+
+## select_discurso_papel_pessoa
+
+## select_discurso_genero
+observe({
+
+  valores_genero <- discursos_cpi %>%
+    dplyr::filter(
+      papel %in% input$select_discurso_papel_pessoa) %>%
+    dplyr::pull(genero) %>%
+    unique() %>%
+    sort()
+
+  updateSelectInput(
+    session,
+    inputId = "select_discurso_genero",
+    choices = valores_genero
+  )
+
+})
+
+## select_discurso_partido
+
+observe({
+
+  valores_partido <- discursos_cpi %>%
+    dplyr::filter(
+      papel %in% input$select_discurso_papel_pessoa,
+      genero %in% input$select_discurso_genero) %>%
+    dplyr::pull(partido_sigla) %>%
+    unique() %>%
+    sort()
+
+  updateSelectInput(
+    session,
+    inputId = "select_discurso_partido",
+    choices = valores_partido
+  )
+
+})
+
+
+## select_pessoa_selecionada
+
+observe({
+
+ valores_falante <- discursos_cpi %>%
+    dplyr::filter(
+      papel %in% input$select_discurso_papel_pessoa,
+      genero %in% input$select_discurso_genero,
+      partido_sigla %in% input$select_discurso_partido) %>%
+    dplyr::pull(falante) %>%
+    unique() %>%
+    sort()
+
+  updateSelectInput(
+    session,
+    inputId = "select_pessoa_selecionada",
+    choices = valores_falante
+  )
+
+})
+
+pessoa_selecionada <- reactive({
+  input$select_pessoa_selecionada
+})
+
+
+## tabela_dados_pessoa
+
+## foto_pessoa_selecionada
+
+output$foto_pessoa_selecionada <- renderUI({
+
+  req(input$select_pessoa_selecionada)
+
+  img(src = retorna_foto(input$select_pessoa_selecionada),
+      width = "100%", height = "200px")
+
+  # display: inline-block;
+  # max-width: 100%;
+  # height: auto;
+  # padding: 4px;
+  # line-height: 1.42857143;
+  # background-color: #fff;
+  #   border: 1px solid #ddd;
+  # border-radius: 4px;
+  # -webkit-transition: all .2s ease-in-out;
+  # -o-transition: all .2s ease-in-out;
+  # transition: all .2s ease-in-out;
+
+})
+
+
+
+
+
+## pct_fala_sessoes
+
+## pct_fala_total
+
+## pct_fala_papel
+
+## pct_fala_genero
+
+## tabela_tempo_por_sessao
+
+## nuvem_de_palavras
+
+## tabela_tf_idf
 
 ##########  Analisar sessão
 
