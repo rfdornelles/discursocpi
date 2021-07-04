@@ -13,12 +13,13 @@ library(htmlwidgets)
 library(ggplot2)
 library(rmarkdown)
 library(reactable)
-
+#library(bs4Dash)
 
 # Base --------------------------------------------------------------------
 
-#data("discursos_cpi")
-#data("tabela_fotos")
+data("discursos_cpi")
+data("tabela_fotos")
+data("base_tokenizada")
 #source("R/auxiliares.R", encoding = "UTF-8")
 
 # ideia -------------------------------------------------------------------
@@ -65,12 +66,10 @@ ui <- dashboardPage(
       # Analisar discurso
       menuItem("Discursos", tabName = "analisar_discursos"),
 
-      # Analisar sessão
+      # Analisar sessões
       menuItem("Sessões", tabName = "analisar_sessoes"),
-      # duração
-      # quantas falaram
 
-      # Analisar termo
+     # Analisar termo
       menuItem("Termos", tabName = "analisar_termos")
       # ranking
       # quem falou
@@ -297,63 +296,119 @@ ui <- dashboardPage(
       fluidRow(
 
         ## tabela
-        box(
-          width = 6,
-          h3("Palavras mais usadas"),
-          br(),
-          sliderInput(width = "100%",
+        column(
+          width = 12,
+          hr(),
+          h2("Palavras mais usadas")
+        ),
+        ),
+
+
+        fluidRow(
+          box(width = 12,
+          sliderInput(
+            width = "100%",
             inputId = "select_quantidade_palavras_discurso",
             label = "Selecione a quantidade de termos",
             min = 1,
-            max = 50,
-            value = 5
+            max = 100,
+            value = 50)
           ),
-          br(),
+
+          box(
+            width = 6,
             reactable::reactableOutput(
-            outputId = "tabela_tf_idf"
+              outputId = "tabela_tf_idf"
+            )
+          ),
+
+          box(
+            width = 6,
+           plotOutput(
+              outputId = "nuvem_de_palavras"
+            )
+          )
+        )
+      ),
+##############
+      # Analisar sessão
+
+      tabItem(
+        tabName = "analisar_sessoes",
+        fluidRow(
+          column(
+            width = 12,
+            h1("Análisar sessões"),
+            br(),
+            "Blab bla bla bla bla",
+            br(),
+            br(),
+            br(),
+          )
+        ),
+        fluidRow(
+          box(
+            width = 6,
+            dateRangeInput(
+              inputId = "sessoes_periodo_datas",
+              label = "Selecione o período de tempo:",
+              start = min(discursos_cpi$data_sessao),
+              end = max(discursos_cpi$data_sessao),
+              format = "dd-mm-yy",
+              language = "pt-BR",
+              autoclose = TRUE
+            ),
+          ),
+          column(
+            width = 6,
+            valueBoxOutput(
+              width = 3,
+              outputId = "quantidade_sessoes_periodo"
+            ),
+            valueBoxOutput(
+              width = 3,
+              outputId = "tempo_reuniao_periodo"
+            )
           )
         ),
 
-        ## grafico / nuvem palavras
-        column(
-          width = 6,
-          plotOutput(
-            outputId = "nuvem_de_palavras"
+
+        fluidRow(
+          box(
+            width = 12,
+            reactableOutput(
+              outputId = "tabela_presenca_sessoes"
+            )
           )
+        ),
+
+
+        fluidRow(
+
+          box(
+            width = 6,
+            plotOutput(
+              outputId = "grafico_sessoes_nuvem_palavras"
+            ),
+            reactableOutput(
+              outputId = "tabela_sessao_ranking_palavras"
+            )
+          )
+
         )
-      ),
-
-      ## nova linha
-      fluidRow(
-
-        ## tabela - tf_idf
-        column(
-          width = 12,
-          # reactable::reactableOutput(
-          #   outputId = "tabela_tf_idf"
-          # )
-        )
-
-      )
-
-      ),
-##############
-
-      # Analisar sessão
-      tabItem(
-        tabName = "analisar_sessoes"),
-      # duração
-      # quantas falaram
-
-
-      # Analisar termo
-      tabItem(
-        tabName = "analisar_termos")
-      # ranking
+      # # duração
+      # # quantas falaram
+      #
+      #
+      # # Analisar termo
+      # tabItem(
+      #   tabName = "analisar_termos")
+      # # ranking
       # quem falou
       # quando falou
     )
   )
+ )
 )
 
 # Server ------------------------------------------------------------------
@@ -759,23 +814,24 @@ output$pct_fala_genero <- renderValueBox({
 
 })
 
-
-## tabela_tempo_por_sessao
-
-output$tabela_tempo_por_sessao <- reactable::renderReactable({
-
-
-
-})
-
 ## nuvem_de_palavras
 
 output$nuvem_de_palavras <- renderPlot({
 
-  lista_palavras_usadas() %>%
+  req(input$select_pessoa_selecionada)
+
+lista_palavras_usadas() %>%
     dplyr::select(termo) %>%
     dplyr::count(termo, sort = TRUE) %>%
-    desenhar_nuvem(qnt = 2 * input$select_quantidade_palavras_discurso)
+    desenhar_nuvem(
+      qnt = 2 * input$select_quantidade_palavras_discurso
+      ) +
+    labs(title =
+  glue::glue("Nuvem de palavras - {stringr::str_to_title(input$select_pessoa_selecionada)}")
+  ) +
+    theme(plot.title = element_text(face = "bold",
+                                    size = 14,
+                                    hjust = 0.5))
 
 
 })
@@ -793,9 +849,14 @@ lista_palavras_usadas <- reactive({
 
 output$tabela_tf_idf <- reactable::renderReactable({
 
-  # base_tokenizada %>%
-  #   dplyr::filter(falante == input$select_pessoa_selecionada) %>%
-  lista_palavras_usadas() %>%
+  req(input$select_pessoa_selecionada)
+
+# input <- list(
+#  select_pessoa_selecionada = "OMAR AZIZ",
+#  select_quantidade_palavras_discurso = 10
+#  )
+
+ lista_palavras_usadas() %>%
     ranking_palavras_discurso(
       ranking = input$select_quantidade_palavras_discurso) %>%
     dplyr::select(rank, termo, n) %>%
@@ -803,7 +864,16 @@ output$tabela_tf_idf <- reactable::renderReactable({
       sortable = TRUE,
       pagination = TRUE,
       showPagination = TRUE,
-      searchable = FALSE
+      searchable = FALSE,
+      highlight = TRUE,
+      compact = TRUE,
+      minRows = 10,
+      defaultColDef = colDef(align = "center"),
+      columns = list(
+        rank = colDef(name = "Ranking", maxWidth = 80),
+        termo = colDef(name = "Palavra", filterable = TRUE),
+        n = colDef(name = "Repetições", maxWidth = 100)
+      )
     )
 
 
