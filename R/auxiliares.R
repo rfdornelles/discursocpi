@@ -1,12 +1,3 @@
-
-#' Foto da pessoa selecionada
-#'
-#' @param falante
-#'
-
-#' @export
-#'
-
 retorna_foto <- function(falante) {
 
   falante <- stringr::str_to_upper(falante)
@@ -153,3 +144,49 @@ graficos_tempo_de_fala <- function (seletor_grafico_tempo_fala) {
   grafico_tempo_fala
 
 }
+
+
+
+# analisar discursos ------------------------------------------------------
+
+# ranking -----------------------------------------------------------------
+
+ranking_palavras_discurso <-function(documento = "falante",
+                                     ranking = 5) {
+
+  # contar cada palavra em cada documento
+  tabela_palavras <- base_tokenizada %>%
+    dplyr::select({{documento}}, termo) %>%
+    dplyr::count(.data[[documento]], termo, sort = TRUE)
+
+  # contagem geral de palavras
+
+  tabela_total_palavras <- tabela_palavras %>%
+    dplyr::group_by(.data[[documento]]) %>%
+    dplyr::summarise(total = dplyr::n())
+
+  # juntar as bases
+
+  tabela_palavras <- dplyr::left_join(
+    x = tabela_palavras,
+    y = tabela_total_palavras)
+
+  # ranking frequência de palavras
+
+  frequencia_rank <- tabela_palavras %>%
+    dplyr::arrange(-n) %>%
+    dplyr::group_by(.data[[documento]]) %>%
+    dplyr::mutate(
+      rank = dplyr::row_number(),
+      freq_termo = n / total
+    ) %>%
+    dplyr::ungroup()
+
+
+  frequencia_rank %>%
+    dplyr::group_by(.data[[documento]]) %>%
+    dplyr::top_n(wt = n, n = ranking) %>%
+    dplyr::arrange(.data[[documento]], rank)
+
+}
+
