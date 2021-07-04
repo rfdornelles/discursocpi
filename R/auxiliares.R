@@ -152,7 +152,8 @@ graficos_tempo_de_fala <- function (seletor_grafico_tempo_fala) {
 # ranking -----------------------------------------------------------------
 
 ranking_palavras_discurso <-function(documento = "falante",
-                                     ranking = 5) {
+                                     ranking = 5,
+                                     tf_idf = FALSE) {
 
   # contar cada palavra em cada documento
   tabela_palavras <- base_tokenizada %>%
@@ -171,6 +172,8 @@ ranking_palavras_discurso <-function(documento = "falante",
     x = tabela_palavras,
     y = tabela_total_palavras)
 
+  if (tf_idf == FALSE) {
+
   # ranking frequência de palavras
 
   frequencia_rank <- tabela_palavras %>%
@@ -187,6 +190,27 @@ ranking_palavras_discurso <-function(documento = "falante",
     dplyr::group_by(.data[[documento]]) %>%
     dplyr::top_n(wt = n, n = ranking) %>%
     dplyr::arrange(.data[[documento]], rank)
+
+  } else {
+
+    tabela_tf_idf <- tabela_palavras %>%
+      tidytext::bind_tf_idf(
+        term = termo,
+        document = .data[[documento]],
+        n = n
+      )
+
+    # quanto maior o tf_idf maior a relevância do termo
+
+    tabela_tf_idf %>%
+      dplyr::select(-total) %>%
+      dplyr::group_by(.data[[documento]]) %>%
+      dplyr::arrange(.data[[documento]], -tf_idf) %>%
+      dplyr::slice_max(order_by = tf_idf, n = ranking)
+
+  }
+
+
 
 }
 
