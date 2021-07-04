@@ -12,14 +12,13 @@ library(shinydashboard)
 library(htmlwidgets)
 library(ggplot2)
 library(rmarkdown)
-library(discursocpi)
 
 
 # Base --------------------------------------------------------------------
-#
-# load("data/discursos_cpi.rda")
-# load("data/tabela_fotos.rda")
-# source("R/auxiliares.R", encoding = "UTF-8")
+
+load("data/discursos_cpi.rda")
+data("tabela_fotos")
+#source("R/auxiliares.R", encoding = "UTF-8")
 
 # ideia -------------------------------------------------------------------
 
@@ -530,9 +529,9 @@ server <- function(input, output, session) {
 
    grafico +
      labs(
-       title = "Tempo de fala na sessões",
+       title = "Duração das sessões",
        x = "Dia da sessão",
-       y = "Tempo de fala"
+       y = "Duração"
      )
 
 
@@ -761,9 +760,19 @@ output$foto_pessoa_selecionada <- renderUI({
 
 output$pct_fala_sessoes <- renderValueBox({
 
+  sessoes_participou <- discursos_cpi %>%
+    dplyr::filter(falante == input$select_pessoa_selecionada) %>%
+    dplyr::distinct(numero_sessao) %>%
+    dplyr::pull()
+
+  valor <- length(sessoes_participou)/
+    length(unique(discursos_cpi$numero_sessao)) * 100
+
+  valor <- round(valor, digits = 2)
+
   valueBox(
-    value = "1",
-    subtitle = "fala das sessões",
+    value = glue::glue("{valor}%"),
+    subtitle = "de participação nas sessões",
     color = "yellow",
     icon = icon("people-arrows")
   )
@@ -774,9 +783,34 @@ output$pct_fala_sessoes <- renderValueBox({
 
 output$pct_fala_total <- renderValueBox({
 
+  sessoes_participou <- discursos_cpi %>%
+    dplyr::filter(falante == input$select_pessoa_selecionada) %>%
+    dplyr::distinct(numero_sessao) %>%
+    dplyr::pull()
+
+  tempo_total_sessoes <- discursos_cpi %>%
+    dplyr::filter(numero_sessao %in% sessoes_participou) %>%
+    dplyr::summarise(
+      sum(horario_duracao, na.rm = TRUE)
+    ) %>%
+    dplyr::pull() %>%
+    as.numeric()
+
+  tempo_pessoa_falou <- discursos_cpi %>%
+    dplyr::filter(falante == input$select_pessoa_selecionada) %>%
+    dplyr::summarise(
+      sum(horario_duracao, na.rm = TRUE)
+    ) %>%
+    dplyr::pull() %>%
+    as.numeric()
+
+  valor <- round(tempo_pessoa_falou/tempo_total_sessoes * 100,
+                 digits = 2)
+
+
   valueBox(
-    value = "1",
-    subtitle = "fala das sessões",
+    value = glue::glue("{valor}%"),
+    subtitle = "do tempo de fala (das sessões que participou)",
     color = "orange",
     icon = icon("user-clock")
   )
@@ -787,9 +821,28 @@ output$pct_fala_total <- renderValueBox({
 
 output$pct_fala_papel <- renderValueBox({
 
+  papel_pessoa <- discursos_cpi %>%
+    dplyr::filter(
+      falante == input$select_pessoa_selecionada) %>%
+    head(1) %>%
+    dplyr::pull(papel)
+
+  bloco_mesmo_papel_rank <- discursos_cpi %>%
+    dplyr::filter(papel == papel_pessoa) %>%
+    dplyr::group_by(falante) %>%
+    dplyr::summarise(
+      tempo = sum(horario_duracao, na.rm = TRUE)
+    ) %>%
+    dplyr::arrange(-tempo) %>%
+    tibble::rowid_to_column("rank")
+
+  valor <- bloco_mesmo_papel_rank %>%
+    dplyr::filter(falante == input$select_pessoa_selecionada) %>%
+    dplyr::pull(rank)
+
   valueBox(
-    value = "1",
-    subtitle = "fala das sessões",
+    value = glue::glue("{valor}º"),
+    subtitle = glue::glue("{papel_pessoa} a mais falar"),
     color = "red",
     icon = icon("id-badge")
   )
@@ -800,9 +853,29 @@ output$pct_fala_papel <- renderValueBox({
 
 output$pct_fala_genero <- renderValueBox({
 
+  genero_pessoa <- discursos_cpi %>%
+    dplyr::filter(
+      falante == input$select_pessoa_selecionada) %>%
+    head(1) %>%
+    dplyr::pull(genero)
+
+  bloco_mesmo_genero_rank <- discursos_cpi %>%
+    dplyr::filter(genero == genero_pessoa) %>%
+    dplyr::group_by(falante) %>%
+    dplyr::summarise(
+      tempo = sum(horario_duracao, na.rm = TRUE)
+    ) %>%
+    dplyr::arrange(-tempo) %>%
+    tibble::rowid_to_column("rank")
+
+  valor <- bloco_mesmo_genero_rank %>%
+    dplyr::filter(falante == input$select_pessoa_selecionada) %>%
+    dplyr::pull(rank)
+
+
   valueBox(
-    value = "1",
-    subtitle = "fala das sessões",
+    value = glue::glue("{valor}º"),
+    subtitle = glue::glue("no gênero {genero_pessoa} que mais fala"),
     color = "maroon",
     icon = icon("restroom")
   )
