@@ -43,4 +43,4 @@ janitor::compare_df_cols_same(base_senado, base_nao_senadores)
 
 tabela_fotos <- dplyr::bind_rows(base_senado, base_nao_senadores)
 
-usethis::use_data(tabela_fotos, overwrite = TRUE)
+usethis::use_data(tabela_fotos, version = 3, overwrite = TRUE)

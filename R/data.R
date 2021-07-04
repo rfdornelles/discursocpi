@@ -45,7 +45,6 @@
 #' @source \url{www.senado.leg.br}
 "discursos_cpi"
 
-
 #' Discursos proferidos na CPI da Pandemia no Senado.
 #'
 #' Base raspada e organizada do site do Senado Federal com todos os discursos
