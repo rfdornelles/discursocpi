@@ -775,7 +775,7 @@ output$nuvem_de_palavras <- renderPlot({
   lista_palavras_usadas() %>%
     dplyr::select(termo) %>%
     dplyr::count(termo, sort = TRUE) %>%
-    desenhar_nuvem()
+    desenhar_nuvem(qnt = 2 * input$select_quantidade_palavras_discurso)
 
 
 })
@@ -796,7 +796,8 @@ output$tabela_tf_idf <- reactable::renderReactable({
   # base_tokenizada %>%
   #   dplyr::filter(falante == input$select_pessoa_selecionada) %>%
   lista_palavras_usadas() %>%
-    ranking_palavras_discurso(ranking = input$select_quantidade_palavras_discurso) %>%
+    ranking_palavras_discurso(
+      ranking = input$select_quantidade_palavras_discurso) %>%
     dplyr::select(rank, termo, n) %>%
     reactable::reactable(
       sortable = TRUE,
