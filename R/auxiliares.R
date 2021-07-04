@@ -1,5 +1,11 @@
-library(magrittr)
-
+#' Foto da pessoa selecionada
+#'
+#' @param falante
+#'
+#' @return
+#' @export
+#'
+#' @examples
 retorna_foto <- function(falante) {
 
   falante <- stringr::str_to_upper(falante)
