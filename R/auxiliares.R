@@ -1,3 +1,47 @@
+
+# options -----------------------------------------------------------------
+options(
+  reactable.theme =
+    reactable::reactableTheme(
+      borderColor = "#dfe2e5",
+      stripedColor = "#f6f8fa",
+      highlightColor = "#f0f5f9",
+      cellPadding = "8px 12px",
+      style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
+      searchInputStyle = list(width = "100%")
+    )
+)
+
+
+# desenha nuvem palavras --------------------------------------------------
+
+desenhar_nuvem <- function(texto, qnt = 40, corMin = "#abbf8f",
+                           corMax = "#07e31d", angular = 0) {
+
+  # receber o texto já "tratado" com a função
+  set.seed(837)
+
+  # angular = 0, não faz angulação
+  # angular = 1, faz a angulação
+
+  texto %>%
+    dplyr::mutate(
+      angle = angular * (90 * sample(c(0, 1), dplyr::n(), replace = TRUE,
+                                     prob = c(80, 20)))) %>%
+    head(qnt) %>%
+    ggplot2::ggplot(ggplot2::aes(label = termo, size = n,
+                                 color = n, angle = angle)) +
+    ggwordcloud::geom_text_wordcloud(rm_outside = TRUE) +
+    ggplot2::scale_size_area(max_size = 15,
+                             trans = ggwordcloud::power_trans(1/.7)) +
+    ggplot2::theme_minimal() +
+    ggplot2::scale_color_gradient(low = corMin, high = corMax)
+
+}
+
+# foto --------------------------------------------------------------------
+
+
 retorna_foto <- function(falante) {
 
   falante <- stringr::str_to_upper(falante)
@@ -151,12 +195,14 @@ graficos_tempo_de_fala <- function (seletor_grafico_tempo_fala) {
 
 # ranking -----------------------------------------------------------------
 
-ranking_palavras_discurso <-function(documento = "falante",
-                                     ranking = 5,
-                                     tf_idf = FALSE) {
+ranking_palavras_discurso <-function(
+  base = base_tokenizada,
+  documento = "falante",
+  ranking = 5,
+  tf_idf = FALSE) {
 
   # contar cada palavra em cada documento
-  tabela_palavras <- base_tokenizada %>%
+  tabela_palavras <- base %>%
     dplyr::select({{documento}}, termo) %>%
     dplyr::count(.data[[documento]], termo, sort = TRUE)
 
@@ -189,7 +235,8 @@ ranking_palavras_discurso <-function(documento = "falante",
   frequencia_rank %>%
     dplyr::group_by(.data[[documento]]) %>%
     dplyr::top_n(wt = n, n = ranking) %>%
-    dplyr::arrange(.data[[documento]], rank)
+    dplyr::arrange(.data[[documento]], rank) %>%
+    dplyr::ungroup()
 
   } else {
 
@@ -206,7 +253,8 @@ ranking_palavras_discurso <-function(documento = "falante",
       dplyr::select(-total) %>%
       dplyr::group_by(.data[[documento]]) %>%
       dplyr::arrange(.data[[documento]], -tf_idf) %>%
-      dplyr::slice_max(order_by = tf_idf, n = ranking)
+      dplyr::slice_max(order_by = tf_idf, n = ranking) %>%
+      dplyr::ungroup()
 
   }
 

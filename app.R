@@ -12,13 +12,14 @@ library(shinydashboard)
 library(htmlwidgets)
 library(ggplot2)
 library(rmarkdown)
+library(reactable)
 
 
 # Base --------------------------------------------------------------------
 
-data("discursos_cpi")
-data("tabela_fotos")
-source("R/auxiliares.R", encoding = "UTF-8")
+#data("discursos_cpi")
+#data("tabela_fotos")
+#source("R/auxiliares.R", encoding = "UTF-8")
 
 # ideia -------------------------------------------------------------------
 
@@ -296,10 +297,20 @@ ui <- dashboardPage(
       fluidRow(
 
         ## tabela
-        column(
+        box(
           width = 6,
-          reactable::reactableOutput(
-            outputId = "tabela_tempo_por_sessao"
+          h3("Palavras mais usadas"),
+          br(),
+          sliderInput(width = "100%",
+            inputId = "select_quantidade_palavras_discurso",
+            label = "Selecione a quantidade de termos",
+            min = 1,
+            max = 50,
+            value = 5
+          ),
+          br(),
+            reactable::reactableOutput(
+            outputId = "tabela_tf_idf"
           )
         ),
 
@@ -318,9 +329,9 @@ ui <- dashboardPage(
         ## tabela - tf_idf
         column(
           width = 12,
-          reactable::reactableOutput(
-            outputId = "tabela_tf_idf"
-          )
+          # reactable::reactableOutput(
+          #   outputId = "tabela_tf_idf"
+          # )
         )
 
       )
@@ -754,18 +765,45 @@ output$pct_fala_genero <- renderValueBox({
 output$tabela_tempo_por_sessao <- reactable::renderReactable({
 
 
+
 })
 
 ## nuvem_de_palavras
 
 output$nuvem_de_palavras <- renderPlot({
 
+  lista_palavras_usadas() %>%
+    dplyr::select(termo) %>%
+    dplyr::count(termo, sort = TRUE) %>%
+    desenhar_nuvem()
+
 
 })
 
 ## tabela_tf_idf
 
+# tornar a lista de palavras reativa
+
+lista_palavras_usadas <- reactive({
+
+  base_tokenizada %>%
+    dplyr::filter(falante == input$select_pessoa_selecionada)
+
+})
+
 output$tabela_tf_idf <- reactable::renderReactable({
+
+  # base_tokenizada %>%
+  #   dplyr::filter(falante == input$select_pessoa_selecionada) %>%
+  lista_palavras_usadas() %>%
+    ranking_palavras_discurso(ranking = input$select_quantidade_palavras_discurso) %>%
+    dplyr::select(rank, termo, n) %>%
+    reactable::reactable(
+      sortable = TRUE,
+      pagination = TRUE,
+      showPagination = TRUE,
+      searchable = FALSE
+    )
 
 
 })
