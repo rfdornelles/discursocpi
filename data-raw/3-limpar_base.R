@@ -94,7 +94,8 @@ base_limpa <- base_limpa %>%
 base_limpa <- base_limpa %>%
   dplyr::mutate(
     # padronizar Osmar Terra que aparece às vezes com partido
-    partido_sigla = dplyr::if_else(falante == "OSMAR TERRA",
+    partido_sigla = dplyr::if_else(falante %in% c("OSMAR TERRA",
+                                                  "LUIS MIRANDA"),
                                    NA_character_,
                                    partido_sigla),
     senado = dplyr::if_else(is.na(partido_sigla), FALSE, TRUE, FALSE)
@@ -109,6 +110,18 @@ base_limpa <- base_limpa %>%
       como_presidente == TRUE ~ "Presidindo Sessão",
       senado == TRUE ~ "Senador/a",
       TRUE ~ NA_character_
+    )
+  )
+
+
+# corrigir partidos -------------------------------------------------------
+
+base_limpa <- base_limpa %>%
+  dplyr::mutate(
+    partido_sigla = dplyr::if_else(
+      is.na(partido_sigla),
+      "Sem partido/Não se aplica",
+      partido_sigla
     )
   )
 
