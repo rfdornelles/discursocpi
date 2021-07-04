@@ -107,7 +107,7 @@ base_limpa <- base_limpa %>%
   dplyr::mutate(
     papel = dplyr::case_when(
       senado == FALSE ~ "Depoente/Convidado",
-      como_presidente == TRUE ~ "Presidindo Sessão",
+    #  como_presidente == TRUE ~ "Presidindo Sessão",
       senado == TRUE ~ "Senador/a",
       TRUE ~ NA_character_
     )
