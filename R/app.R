@@ -210,38 +210,42 @@ ui <- dashboardPage(
             "Filtros",
             br()
             ),
-
-            # selecionar papel da pessoa
+    # selecionar papel da pessoa
       box(
-        width = 4,
-        selectInput(
+        width = 3,
+        checkboxGroupInput(
           inputId = "select_discurso_papel_pessoa",
           label = "Selecione o papel exercido",
-          choices = unique(discursos_cpi$papel),
-          width = "100%",
-          multiple = TRUE
+          choiceNames = as.list(c("Senador/a", "Depoente/Convidado")),
+          choiceValues = as.list(c("Senador/a", "Depoente/Convidado")),
+          selected = as.list(c("Senador/a", "Depoente/Convidado")),
+          width = "100%"
         )
       ),
-            # selecionar gênero
+    # selecionar gênero
       box(
-        width = 4,
-        selectInput(
+        width = 3,
+        checkboxGroupInput(
           inputId = "select_discurso_genero",
           label = "Selecione o gênero",
-          choices = "Carregando...",
-          width = "100%",
-          multiple = TRUE
+          choiceNames = as.list(unique(discursos_cpi$genero)),
+          choiceValues = as.list(unique(discursos_cpi$genero)),
+          selected = as.list(unique(discursos_cpi$genero)),
+          width = "100%"
         )
-      ),
-            # selecionar partido
+          ),
+
+      # selecionar partido
       box(
-        width = 4,
-        selectInput(
+        width = 6,
+        checkboxGroupInput(
           inputId = "select_discurso_partido",
           label = "Selecione um partido (se cabível)",
-          choices = "Carregando...",
+          choiceNames = as.list(unique(discursos_cpi$partido_sigla)),
+          choiceValues = as.list(unique(discursos_cpi$partido_sigla)),
+          selected = as.list(unique(discursos_cpi$partido_sigla)),
           width = "100%",
-          multiple = TRUE
+          inline = TRUE
         )
         )
         ),
@@ -687,10 +691,10 @@ observe({
     unique() %>%
     sort()
 
-  updateSelectInput(
+  updateCheckboxGroupInput(
     session,
     inputId = "select_discurso_genero",
-    choices = valores_genero
+    selected = as.list(valores_genero)
   )
 
 })
@@ -707,20 +711,17 @@ observe({
     unique() %>%
     sort()
 
-  updateSelectInput(
+  updateCheckboxGroupInput(
     session,
     inputId = "select_discurso_partido",
-    choices = valores_partido
+    selected = as.list(valores_partido)
   )
 
 })
 
+valores_falante <- reactive({
 
-## select_pessoa_selecionada
-
-observe({
-
- valores_falante <- discursos_cpi %>%
+  valores_falante <- discursos_cpi %>%
     dplyr::filter(
       papel %in% input$select_discurso_papel_pessoa,
       genero %in% input$select_discurso_genero,
@@ -729,18 +730,28 @@ observe({
     unique() %>%
     sort()
 
+})
+
+## select_pessoa_selecionada
+
+observe({
+#
+#  valores_falante <- discursos_cpi %>%
+#     dplyr::filter(
+#       papel %in% input$select_discurso_papel_pessoa,
+#       genero %in% input$select_discurso_genero,
+#       partido_sigla %in% input$select_discurso_partido) %>%
+#     dplyr::pull(falante) %>%
+#     unique() %>%
+#     sort()
+
   updateSelectInput(
     session,
     inputId = "select_pessoa_selecionada",
-    choices = valores_falante
+    choices = valores_falante()
   )
 
 })
-
-pessoa_selecionada <- reactive({
-  input$select_pessoa_selecionada
-})
-
 
 ## tabela_dados_pessoa
 
@@ -752,19 +763,6 @@ output$foto_pessoa_selecionada <- renderUI({
 
   img(src = retorna_foto(input$select_pessoa_selecionada),
       width = "100%", height = "200px")
-
-  # display: inline-block;
-  # max-width: 100%;
-  # height: auto;
-  # padding: 4px;
-  # line-height: 1.42857143;
-  # background-color: #fff;
-  #   border: 1px solid #ddd;
-  # border-radius: 4px;
-  # -webkit-transition: all .2s ease-in-out;
-  # -o-transition: all .2s ease-in-out;
-  # transition: all .2s ease-in-out;
-
 })
 
 
