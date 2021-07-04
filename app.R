@@ -16,9 +16,9 @@ library(rmarkdown)
 
 # Base --------------------------------------------------------------------
 
-load("data/discursos_cpi.rda")
+data("discursos_cpi")
 data("tabela_fotos")
-#source("R/auxiliares.R", encoding = "UTF-8")
+source("R/auxiliares.R", encoding = "UTF-8")
 
 # ideia -------------------------------------------------------------------
 
