@@ -422,12 +422,12 @@ ui <- dashboardPage(
 
           # select termo
           box(
-            width = 12, title = "Teste",
+            width = 12, title = "Termo",
             selectInput(
               inputId = "select_termo_usado",
-              label = "Insira os termos desejados",
+              label = "Seleicone o termo desejado",
               choices = "Carregando...",
-              multiple = TRUE,
+              multiple = FALSE,
               selected = "Carregando..."
             ),
 
@@ -437,7 +437,7 @@ ui <- dashboardPage(
             selectInput(
               inputId = "select_perspectiva_termos",
               label = "Selecione uma variável para analisar",
-              choices = c("Orador", "Partido", "Papel exercido",
+              choices = c("Participante", "Partido", "Papel exercido",
                           "Gênero")
             )
           ),
@@ -1175,7 +1175,10 @@ observe({
     session,
     inputId = "select_termo_usado",
     choices = escolhas,
-    selected = sample(escolhas[1:20], size = 5, replace = FALSE)
+    selected = sample(
+      c("vacina", "covid", "saude", "pandemia", "federal",
+       "tratamento", "cloroquina"),
+      size = 1)
   )
 
 })
@@ -1192,7 +1195,7 @@ observe({
 #
 # })
 
-output$tabela_quem_falou_termo <- renderReactable({
+tabela_filtrada_reativa <- reactive({
 
   resposta <- input$select_perspectiva_termos
 
@@ -1203,22 +1206,43 @@ output$tabela_quem_falou_termo <- renderReactable({
     TRUE ~ "falante"
   )
 
-  # tipo_tf_idf <- dplyr::if_else(
+       ranking_palavras_discurso(
+        ranking = 100,
+        # tf_idf = tipo_tf_idf,
+        documento = variavel_selecionada
+      ) %>%
+         dplyr::filter(termo %in% input$select_termo_usado) %>%
+         dplyr::relocate(
+           termo, dplyr::matches(variavel_selecionada)
+         )
+
+})
+
+output$tabela_quem_falou_termo <- renderReactable({
+
+  req(input$select_termo_usado)
+
+   # tipo_tf_idf <- dplyr::if_else(
   #   input$select_tf_idf == "Ranking",
   #   FALSE,
   #   TRUE,
   #   FALSE
   # )
-
-     ranking_palavras_discurso(
-      ranking = 3,
-      # tf_idf = tipo_tf_idf,
-      documento = variavel_selecionada
-    ) %>%
-       dplyr::filter(termo %in% input$select_termo_usado) %>%
-    dplyr::relocate(
-      termo, dplyr::matches(variavel_selecionada)
-    ) %>%
+#
+#      ranking_palavras_discurso(
+#       ranking = 3,
+#       # tf_idf = tipo_tf_idf,
+#       documento = variavel_selecionada
+#     ) %>%
+#        dplyr::filter(termo %in% input$select_termo_usado) %>%
+#     dplyr::relocate(
+#       termo, dplyr::matches(variavel_selecionada)
+#     ) %>%
+#
+    tabela_filtrada_reativa() %>%
+      dplyr::mutate(
+        participacao = n / sum(n)
+      ) %>%
     reactable(
       sortable = TRUE,
       pagination = TRUE,
@@ -1226,11 +1250,14 @@ output$tabela_quem_falou_termo <- renderReactable({
       searchable = FALSE,
       highlight = TRUE,
       compact = TRUE,
-      minRows = 10,
-      defaultSorted = c("termo", "n"),
+      #minRows = 10,
+      showPageSizeOptions = TRUE,
+      #groupBy = "termo",
+      defaultSorted = c("n"),
+      defaultSortOrder = "desc",
       defaultColDef = colDef(align = "center"),
       columns = list(
-        termo = colDef(name = "Palavra", filterable = TRUE),
+        termo = colDef(name = "Palavra"),
         papel = colDef(name = "Atuação"),
         partido_sigla = colDef(name = "Partido",
                                filterable = TRUE),
@@ -1240,10 +1267,20 @@ output$tabela_quem_falou_termo <- renderReactable({
         total = colDef(show = FALSE),
         falante = colDef(name = "Participante",
                          filterable = TRUE),
-        rank = colDef(show = FALSE),
-        freq_termo = colDef(name = "% do uso",
-                            format = colFormat(percent = TRUE,
-                                               digits = 2)),
+        rank = colDef(name = "Rank de uso", show = FALSE),
+        freq_termo = colDef(
+          format = colFormat(percent = TRUE, digits = 2),
+          header = with_tooltip(
+          "Importância da palavra",
+          "O quanto a palavra é frequente no vocabulário da pessoa. Quanto maior, mais essa palavra foi usada pela pessoa em seus discursos.")
+                            ),
+        participacao = colDef(
+          name = "O quanto usou da palavra",
+          format = colFormat(percent = TRUE, digits = 2),
+          header = with_tooltip(
+          "Frequência do uso",
+          "O quanto a pessoa representa do uso total da palavra. Quanto maior, mais a pessoa fez uso da palavra em relação aos demais."
+          )),
         tf = colDef(show = FALSE),
         idf = colDef(show = FALSE),
         tf_idf = colDef(show = FALSE)
