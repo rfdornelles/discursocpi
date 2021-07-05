@@ -37,6 +37,8 @@ Presidência da Sessão, ainda que temporária.}
 \item{partido_sigla}{Sigla do Partido político a qual o/a Parlamentar está
 vinculado. Será NA especialmente nos casos em que não se tratar de Senador/a.}
 \item{partido_uf}{Partido político de origem do/a Parlamentar}
+\item{genero}{Gênero da pessoa que falou.}
+\item{senado}{Se a pessoa é membro do Senado Federal ou não.}
 }
 }
 \source{

@@ -39,6 +39,15 @@
 #'   \item{partido_sigla}{Sigla do Partido político a qual o/a Parlamentar está
 #'   vinculado. Será NA especialmente nos casos em que não se tratar de Senador/a.}
 #'   \item{partido_uf}{Partido político de origem do/a Parlamentar}
+#'   \item{genero}{Gênero da pessoa que falou.}
+#'   \item{senado}{Se a pessoa é membro do Senado Federal ou não.}
 #' }
 #' @source \url{www.senado.leg.br}
 "discursos_cpi"
+
+#' Discursos proferidos na CPI da Pandemia no Senado.
+#'
+#' Base raspada e organizada do site do Senado Federal com todos os discursos
+#' proferidos nas reuniões da CPI da Pandemia. Os discursos foram transcritos
+#' pela equipe do Senado Federal e disponibilizados no site.
+"tabela_fotos"

@@ -11,7 +11,7 @@ library(tibble)
 
 # carregar a base suja ----------------------------------------------------
 
-base <- readr::read_rds("data-raw/base_suja.rds")
+base <- readr::read_rds("data-raw/rds/base_suja.rds")
 
 # expressões a serem removidas --------------------------------------------
 # do campo falante
@@ -64,9 +64,70 @@ base_limpa <- base_limpa %>%
   tidyr::separate(col = partido,
                   into = c("partido_sigla", "partido_uf"),
                   sep = " - ")
+
+
+# corrigir duplicados -----------------------------------------------------
+
+base_limpa <- base_limpa %>%
+  dplyr::mutate(
+    falante = dplyr::case_when(
+    falante == "MARCELO ANTÔNIO CARTAXO QUEIROGA LOPES" ~ "MARCELO QUEIROGA",
+    falante == "MARCELLUS JOSÉ BARROSO CAMPÊLO" ~ "MARCELLUS CAMPELO",
+    TRUE ~ falante
+    )
+  )
+
+
+# acrescentar dados -------------------------------------------------------
+
+# acrescentar gênero
+base_limpa <- base_limpa %>%
+  dplyr::mutate(
+    genero = genderBR::get_gender(abjutils::rm_accent(falante)),
+    genero = dplyr::if_else(genero == "Female", "Feminino",
+                            "Masculino",
+                            # os nomes NA eram de homens
+                            "Masculino")
+  )
+
+# se é ou não parlamentar do Senado
+base_limpa <- base_limpa %>%
+  dplyr::mutate(
+    # padronizar Osmar Terra que aparece às vezes com partido
+    partido_sigla = dplyr::if_else(falante %in% c("OSMAR TERRA",
+                                                  "LUIS MIRANDA"),
+                                   NA_character_,
+                                   partido_sigla),
+    senado = dplyr::if_else(is.na(partido_sigla), FALSE, TRUE, FALSE)
+  )
+
+# papel na Comissão
+
+base_limpa <- base_limpa %>%
+  dplyr::mutate(
+    papel = dplyr::case_when(
+      senado == FALSE ~ "Depoente/Convidado",
+    #  como_presidente == TRUE ~ "Presidindo Sessão",
+      senado == TRUE ~ "Senador/a",
+      TRUE ~ NA_character_
+    )
+  )
+
+
+# corrigir partidos -------------------------------------------------------
+
+base_limpa <- base_limpa %>%
+  dplyr::mutate(
+    partido_sigla = dplyr::if_else(
+      is.na(partido_sigla),
+      "Sem partido/Não se aplica",
+      partido_sigla
+    )
+  )
+
+# exportar ----------------------------------------------------------------
 # salvar com nome melhor
 discursos_cpi <- base_limpa
 
-# exportar ----------------------------------------------------------------
-
-usethis::use_data(discursos_cpi, overwrite = TRUE, version = 3)
+usethis::use_data(discursos_cpi, overwrite = TRUE,
+                  version = 3, compress = "gzip")
