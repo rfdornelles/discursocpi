@@ -447,12 +447,12 @@ ui <- dashboardPage(
           column(
            width = 6,
 
-           selectInput(
-             inputId = "select_tf_idf",
-             label = "Deseja observar",
-             choices = c("Ranking",
-                         "Relevância do termo (tf_idf)")
-           )
+           # selectInput(
+           #   inputId = "select_tf_idf",
+           #   label = "Deseja observar",
+           #   choices = c("Ranking",
+           #               "Relevância do termo (tf_idf)")
+           # )
           )
         )
       ),
@@ -461,15 +461,16 @@ ui <- dashboardPage(
 
           # tabela
           column(
-            width = 6,
+            width = 12,
             reactableOutput(
               outputId = "tabela_quem_falou_termo"
             )
           ),
+          br(),
 
           # gráfico
           column(
-            width = 6,
+            width = 12,
             plotOutput(
               outputId = "grafico_uso_termo"
             )
@@ -745,7 +746,8 @@ observe({
     updateSelectInput(
     session,
     inputId = "select_pessoa_selecionada",
-    choices = valores_falante()
+    choices = valores_falante(),
+    selected = sample(valores_falante(), 1)
   )
 
 })
@@ -857,6 +859,8 @@ output$pct_fala_papel <- renderValueBox({
 ## pct_fala_genero
 
 output$pct_fala_genero <- renderValueBox({
+
+  req(input$select_pessoa_selecionada)
 
   genero_pessoa <- discursos_cpi %>%
     dplyr::filter(
@@ -1159,6 +1163,101 @@ output$tabela_sessao_ranking_palavras <- renderReactable({
 
 
 ##########  Analisar termo
+## update select_termo_usado
+
+observe({
+
+  escolhas <- base_tokenizada %>%
+    dplyr::count(termo, sort = TRUE) %>%
+    dplyr::pull(termo)
+
+  updateSelectInput(
+    session,
+    inputId = "select_termo_usado",
+    choices = escolhas,
+    selected = sample(escolhas[1:20], size = 5, replace = FALSE)
+  )
+
+})
+
+## tabela_quem_falou_termo
+
+## reativo
+
+# token_termos_usados_reativo <- reactive({
+#
+#   base_tokenizada %>%
+#     dplyr::filter(termo %in% input$select_termo_usado)
+#
+#
+# })
+
+output$tabela_quem_falou_termo <- renderReactable({
+
+  resposta <- input$select_perspectiva_termos
+
+  variavel_selecionada <- dplyr::case_when(
+    resposta == "Partido" ~ "partido_sigla",
+    resposta == "Papel exercido" ~ "papel",
+    resposta == "Gênero" ~ "genero",
+    TRUE ~ "falante"
+  )
+
+  # tipo_tf_idf <- dplyr::if_else(
+  #   input$select_tf_idf == "Ranking",
+  #   FALSE,
+  #   TRUE,
+  #   FALSE
+  # )
+
+     ranking_palavras_discurso(
+      ranking = 3,
+      # tf_idf = tipo_tf_idf,
+      documento = variavel_selecionada
+    ) %>%
+       dplyr::filter(termo %in% input$select_termo_usado) %>%
+    dplyr::relocate(
+      termo, dplyr::matches(variavel_selecionada)
+    ) %>%
+    reactable(
+      sortable = TRUE,
+      pagination = TRUE,
+      showPagination = TRUE,
+      searchable = FALSE,
+      highlight = TRUE,
+      compact = TRUE,
+      minRows = 10,
+      defaultSorted = c("termo", "n"),
+      defaultColDef = colDef(align = "center"),
+      columns = list(
+        termo = colDef(name = "Palavra", filterable = TRUE),
+        papel = colDef(name = "Atuação"),
+        partido_sigla = colDef(name = "Partido",
+                               filterable = TRUE),
+        genero = colDef(name = "Gênero"),
+        n = colDef(name = "Repetições",
+                   format = colFormat(separators = TRUE)),
+        total = colDef(show = FALSE),
+        falante = colDef(name = "Participante",
+                         filterable = TRUE),
+        rank = colDef(show = FALSE),
+        freq_termo = colDef(name = "% do uso",
+                            format = colFormat(percent = TRUE,
+                                               digits = 2)),
+        tf = colDef(show = FALSE),
+        idf = colDef(show = FALSE),
+        tf_idf = colDef(show = FALSE)
+
+      )
+
+    )
+
+
+
+})
+
+## grafico_uso_termo
+
 
 
 
