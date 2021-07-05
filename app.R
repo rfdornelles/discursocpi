@@ -397,21 +397,92 @@ ui <- dashboardPage(
               outputId = "tabela_sessao_ranking_palavras"
             )
           )
-        )
-      # # duração
-      # # quantas falaram
-      #
-      #
+        ),
+),
       # # Analisar termo
-      # tabItem(
-      #   tabName = "analisar_termos")
+      tabItem(
+        tabName = "analisar_termos",
+
+        # intro
+
+        fluidRow(
+          column(
+            width = 12,
+            h1("Análisar sessões"),
+            br(),
+            "Blab bla bla bla bla",
+            br(),
+            br(),
+            br(),
+          )
+        ),
+
+        #
+        fluidRow(
+
+          # select termo
+          box(
+            width = 12, title = "Teste",
+            selectInput(
+              inputId = "select_termo_usado",
+              label = "Insira os termos desejados",
+              choices = "Carregando...",
+              multiple = TRUE,
+              selected = "Carregando..."
+            ),
+
+          # select perspectiva
+          column(
+            width = 6,
+            selectInput(
+              inputId = "select_perspectiva_termos",
+              label = "Selecione uma variável para analisar",
+              choices = c("Orador", "Partido", "Papel exercido",
+                          "Gênero")
+            )
+          ),
+
+
+          # select tf_idf
+          column(
+           width = 6,
+
+           selectInput(
+             inputId = "select_tf_idf",
+             label = "Deseja observar",
+             choices = c("Ranking",
+                         "Relevância do termo (tf_idf)")
+           )
+          )
+        )
+      ),
+
+        fluidRow(
+
+          # tabela
+          column(
+            width = 6,
+            reactableOutput(
+              outputId = "tabela_quem_falou_termo"
+            )
+          ),
+
+          # gráfico
+          column(
+            width = 6,
+            plotOutput(
+              outputId = "grafico_uso_termo"
+            )
+          )
+        )
+    )
       # # ranking
       # quem falou
       # quando falou
     )
   )
- )
 )
+
 
 # Server ------------------------------------------------------------------
 
