@@ -1,7 +1,4 @@
 ## Rodrigo Dornelles - Sat Jul 03 00:00:43 2021
-##
-## Objetivo: aplicativo shiny
-
 
 # Pacotes -----------------------------------------------------------
 
@@ -34,22 +31,41 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       # Apresentação
-      menuItem("Apresentação", tabName = "intro"),
+      menuItem("Apresentação",
+               tabName = "intro",
+               icon = icon("envelope-open-text")),
 
       # Visão Geral
-      menuItem("Visão Geral", tabName = "visao_geral"),
+      menuItem("Visão Geral",
+               tabName = "visao_geral",
+               icon = icon("tachometer-alt")),
 
       # Analisar discurso
-      menuItem("Discursos", tabName = "analisar_discursos"),
+      menuItem("Participantes da CPI",
+               tabName = "analisar_discursos",
+               icon = icon("users")),
 
       # Analisar sessões
-      menuItem("Sessões", tabName = "analisar_sessoes"),
+      menuItem("Sessões: o que aconteceu?",
+               tabName = "analisar_sessoes",
+               icon = icon("calendar-alt")),
 
      # Analisar termo
-      menuItem("Termos", tabName = "analisar_termos")
-      # ranking
-      # quem falou
-      # quando falou
+      menuItem("Pesquisa de termos",
+               tabName = "analisar_termos",
+               icon = icon("search")),
+     br(),
+     br(),
+     br(),
+
+
+     # github
+     menuItem("Acesse os dados e scripts", newtab = TRUE,
+              href = "https://github.com/rfdornelles/discursocpi",
+              icon = icon("github")),
+     menuItem("LinkedIn", newtab = TRUE,
+              href = "https://www.linkedin.com/in/rodrigo-dornelles-576705a2/",
+              icon = icon("linkedin"))
     )
   ),
 
@@ -67,7 +83,7 @@ ui <- dashboardPage(
           column(
             width = 12,
             ## colocar aqruivo .md que contenha o texto
-            includeMarkdown("README.md")
+            includeMarkdown("doc/apresentacao.md")
           )
         )
       ),
@@ -85,10 +101,10 @@ ui <- dashboardPage(
             width = 12,
             h1("Visão Geral da CPI"),
             br(),
-            "Texto bla bla bla bla bla",
-            br(),
-            br(),
-            br()
+            #"Abaixo temos uma visão geral",
+            # br(),
+            # br(),
+            # br()
           )
         ),
         fluidRow(
@@ -115,10 +131,12 @@ ui <- dashboardPage(
           ),
       # segunda fileira
       fluidRow(
+
         infoBoxOutput(
           width = 6,
           outputId = "total_horas_faladas"
         ) %>% withSpinner(),
+
         infoBoxOutput(
           width = 6,
           outputId = "quantidade_total_falantes"
@@ -131,6 +149,7 @@ ui <- dashboardPage(
           width = 6,
           h2("Distribuição das sessões"),
           br(),
+
           selectInput(
             inputId = "seletor_grafico_distribuicao_sessoes",
             label = "Selecione o tipo de análise",
@@ -138,6 +157,7 @@ ui <- dashboardPage(
             width = "100%"
           ),
           br(),
+
           plotOutput(
             outputId = "grafico_distribuicao_sessoes"
           ) %>% withSpinner()
@@ -146,6 +166,7 @@ ui <- dashboardPage(
           width = 6,
           h2("Tempo de fala"),
           br(),
+
           selectInput(
             inputId = "seletor_grafico_tempo_fala",
             label = "Selecione o recorte de análise",
@@ -154,6 +175,7 @@ ui <- dashboardPage(
             width = "100%"
           ),
           br(),
+
           plotOutput(
             outputId = "grafico_tempo_fala"
           ) %>% withSpinner()
@@ -172,12 +194,11 @@ ui <- dashboardPage(
         fluidRow(
           column(
             width = 12,
-            h1("Análisar discurso conforme ordador(a)"),
+            h1("Analisar a atuação de participantes"),
             br(),
-            "Blab bla bla bla bla",
+            "Veja abaixo algumas informações sobre a participação de alguma pessoa específica. Filtre conforme as variáveis de interesse e abaixo visualize as palavras mais usadas em formato de tabela ou gráfico de nuvem.",
             br(),
-            br(),
-            br(),
+            br()
           )
         ),
         fluidRow(
@@ -185,6 +206,7 @@ ui <- dashboardPage(
     # selecionar papel da pessoa
       box(
         width = 3,
+
         checkboxGroupInput(
           inputId = "select_discurso_papel_pessoa",
           label = "Selecione o papel exercido",
@@ -198,6 +220,7 @@ ui <- dashboardPage(
     # selecionar gênero
       box(
         width = 3,
+
         checkboxGroupInput(
           inputId = "select_discurso_genero",
           label = "Selecione o gênero",
@@ -212,6 +235,7 @@ ui <- dashboardPage(
       # selecionar partido
       box(
         width = 6,
+
         checkboxGroupInput(
           inputId = "select_discurso_partido",
           label = "Selecione um partido (se cabível)",
@@ -229,14 +253,16 @@ ui <- dashboardPage(
           width = 12,
           column(
             width = 8,
+
               selectInput(
               inputId = "select_pessoa_selecionada",
               label = "Selecione alguém que participou da CPI",
               choices = "Carregando...",
-              width = "90%",
+              width = "90%"
             )
             ),
           column(width = 4,
+
           htmlOutput(
             outputId = "foto_pessoa_selecionada"
           ) %>% withSpinner()
@@ -251,16 +277,22 @@ ui <- dashboardPage(
           width = 3,
           outputId = "pct_fala_sessoes"
         ) %>% withSpinner(),
+
+
         # % fala no total
         valueBoxOutput(
           width = 3,
           outputId = "pct_fala_total"
         ) %>% withSpinner(),
+
+
         # % fala no papel
         valueBoxOutput(
           width = 3,
           outputId = "pct_fala_papel"
         ) %>% withSpinner(),
+
+
         # % fala no genero
         valueBoxOutput(
           width = 3,
@@ -314,10 +346,9 @@ ui <- dashboardPage(
         fluidRow(
           column(
             width = 12,
-            h1("Análisar sessões"),
+            h1("Analisar sessões"),
             br(),
-            "Blab bla bla bla bla",
-            br(),
+            "Especifique um período de tempo para ver os dados relativos à ssessões que nele ocorreram.",
             br(),
             br(),
           )
@@ -338,10 +369,12 @@ ui <- dashboardPage(
               separator = "até"
             ),
           ),
+
           valueBoxOutput(
               width = 3,
               outputId = "quantidade_sessoes_periodo"
             ) %>% withSpinner(),
+
             valueBoxOutput(
               width = 3,
               outputId = "tempo_reuniao_periodo"
@@ -352,6 +385,7 @@ ui <- dashboardPage(
         fluidRow(
           box(
             width = 12,
+
             reactableOutput(
               outputId = "tabela_presenca_sessoes"
             ) %>% withSpinner()
@@ -366,9 +400,11 @@ ui <- dashboardPage(
             plotOutput(
               outputId = "grafico_sessoes_nuvem_palavras"
             ) %>% withSpinner()
+
             ),
           box(
             width = 6,
+
             reactableOutput(
               outputId = "tabela_sessao_ranking_palavras"
             ) %>% withSpinner()
@@ -384,10 +420,10 @@ ui <- dashboardPage(
         fluidRow(
           column(
             width = 12,
-            h1("Análisar sessões"),
+            h1("Analisar palavras específicas"),
             br(),
-            "Blab bla bla bla bla",
-            br(),
+            "Selecione alguma das palavras para saber quem são as pessoas que mais as utilizaram e como.",
+            #br(),
             br(),
             br(),
           )
@@ -438,6 +474,7 @@ ui <- dashboardPage(
           # tabela
           column(
             width = 12,
+
             reactableOutput(
               outputId = "tabela_quem_falou_termo"
             ) %>% withSpinner()
@@ -445,17 +482,15 @@ ui <- dashboardPage(
           br(),
 
           # gráfico
-          column(
-            width = 12,
-            plotOutput(
-              outputId = "grafico_uso_termo"
-            ) %>% withSpinner()
-          )
+          # column(
+          #   width = 12,
+          #
+          #   # plotOutput(
+          #   #   outputId = "grafico_uso_termo"
+          #   # ) #%>% withSpinner()
+          # )
         )
     )
-      # # ranking
-      # quem falou
-      # quando falou
     )
   )
 )
