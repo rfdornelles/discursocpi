@@ -13,7 +13,7 @@ library(htmlwidgets)
 library(ggplot2)
 library(rmarkdown)
 library(reactable)
-#library(bs4Dash)
+library(shinycssloaders)
 
 # Base --------------------------------------------------------------------
 
@@ -21,30 +21,6 @@ data("discursos_cpi")
 data("tabela_fotos")
 data("base_tokenizada")
 #source("R/auxiliares.R", encoding = "UTF-8")
-
-# ideia -------------------------------------------------------------------
-
-# Visão geral
-  # quantidade de sessões
-  # total de horas
-  # quantidade de pessoas que falou
-  # perfil
-
-# Analisar discurso
-  # o que a pessoa mais falou
-  # quantidade de horas que a pessoa falou
-  # palavras mais faladas
-  # sessão em que mais falou
-
-# Analisar sessão
-  # duração
-  # quantas falaram
-  #
-
-# Analisar termo
-  # ranking
-  # quem falou
-  # quando falou
 
 # UI ----------------------------------------------------------------------
 
@@ -120,12 +96,12 @@ ui <- dashboardPage(
           valueBoxOutput(
               outputId = "quantidade_de_sessoes",
               width = 3
-            ),
+            ) %>% withSpinner(),
 
           valueBoxOutput(
             outputId = "primeira_sessao",
             width = 3
-          ),
+          ) %>% withSpinner(),
 
           valueBoxOutput(
             outputId = "ultima_sessao",
@@ -135,18 +111,18 @@ ui <- dashboardPage(
           valueBoxOutput(
             outputId = "contagem_regressiva",
             width = 3
-          )
+          ) %>% withSpinner()
           ),
       # segunda fileira
       fluidRow(
         infoBoxOutput(
           width = 6,
           outputId = "total_horas_faladas"
-        ),
+        ) %>% withSpinner(),
         infoBoxOutput(
           width = 6,
           outputId = "quantidade_total_falantes"
-        )
+        ) %>% withSpinner()
       ),
 
       # terceira fileira
@@ -164,7 +140,7 @@ ui <- dashboardPage(
           br(),
           plotOutput(
             outputId = "grafico_distribuicao_sessoes"
-          )
+          ) %>% withSpinner()
         ),
         column(
           width = 6,
@@ -180,7 +156,7 @@ ui <- dashboardPage(
           br(),
           plotOutput(
             outputId = "grafico_tempo_fala"
-          )
+          ) %>% withSpinner()
         )
       )
 
@@ -263,7 +239,7 @@ ui <- dashboardPage(
           column(width = 4,
           htmlOutput(
             outputId = "foto_pessoa_selecionada"
-          )
+          ) %>% withSpinner()
       ),
       ),
       ),
@@ -274,22 +250,22 @@ ui <- dashboardPage(
         valueBoxOutput(
           width = 3,
           outputId = "pct_fala_sessoes"
-        ),
+        ) %>% withSpinner(),
         # % fala no total
         valueBoxOutput(
           width = 3,
           outputId = "pct_fala_total"
-        ),
+        ) %>% withSpinner(),
         # % fala no papel
         valueBoxOutput(
           width = 3,
           outputId = "pct_fala_papel"
-        ),
+        ) %>% withSpinner(),
         # % fala no genero
         valueBoxOutput(
           width = 3,
           outputId = "pct_fala_genero"
-        )
+        ) %>% withSpinner()
       ),
 
       ## nova linha
@@ -319,14 +295,14 @@ ui <- dashboardPage(
             width = 6,
             reactable::reactableOutput(
               outputId = "tabela_tf_idf"
-            )
+            ) %>% withSpinner()
           ),
 
           box(
             width = 6,
            plotOutput(
               outputId = "nuvem_de_palavras"
-            )
+            ) %>% withSpinner()
           )
         )
       ),
@@ -365,11 +341,11 @@ ui <- dashboardPage(
           valueBoxOutput(
               width = 3,
               outputId = "quantidade_sessoes_periodo"
-            ),
+            ) %>% withSpinner(),
             valueBoxOutput(
               width = 3,
               outputId = "tempo_reuniao_periodo"
-            )
+            ) %>% withSpinner()
         ),
 
 
@@ -378,7 +354,7 @@ ui <- dashboardPage(
             width = 12,
             reactableOutput(
               outputId = "tabela_presenca_sessoes"
-            )
+            ) %>% withSpinner()
           )
         ),
 
@@ -389,13 +365,13 @@ ui <- dashboardPage(
             width = 6,
             plotOutput(
               outputId = "grafico_sessoes_nuvem_palavras"
-            )
+            ) %>% withSpinner()
             ),
           box(
             width = 6,
             reactableOutput(
               outputId = "tabela_sessao_ranking_palavras"
-            )
+            ) %>% withSpinner()
           )
         ),
 ),
@@ -464,7 +440,7 @@ ui <- dashboardPage(
             width = 12,
             reactableOutput(
               outputId = "tabela_quem_falou_termo"
-            )
+            ) %>% withSpinner()
           ),
           br(),
 
@@ -473,7 +449,7 @@ ui <- dashboardPage(
             width = 12,
             plotOutput(
               outputId = "grafico_uso_termo"
-            )
+            ) %>% withSpinner()
           )
         )
     )
@@ -1206,12 +1182,16 @@ tabela_filtrada_reativa <- reactive({
     TRUE ~ "falante"
   )
 
+  termo_usado <- stringr::str_to_lower(input$select_termo_usado) %>%
+    stringr::str_trim() %>%
+    abjutils::rm_accent()
+
        ranking_palavras_discurso(
         ranking = 100,
         # tf_idf = tipo_tf_idf,
         documento = variavel_selecionada
       ) %>%
-         dplyr::filter(termo %in% input$select_termo_usado) %>%
+         dplyr::filter(termo %in% termo_usado) %>%
          dplyr::relocate(
            termo, dplyr::matches(variavel_selecionada)
          )
