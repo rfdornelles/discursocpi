@@ -13,8 +13,6 @@ Shiny disponível em:
 
 ## Contexto
 
-<img src="https://conteudo.imguol.com.br/c/entretenimento/30/2021/06/11/rafael-chalub-o-esse-menino-em-sua-esquete-da-pifaizer-1623439612984_v2_600x600.jpg.webp" width="158"/>
-
 É certo que o Brasil lidou e vem lidando muito mal com a pandemia da
 COVID-19, que se mostrou ser muito mais grave do que uma *gripezinha*.
 Depois de alcançar mais de centenas de milhares de óbitos em razão
@@ -27,12 +25,6 @@ trabalhando intensamente desde abril de 2021 e promete e reunir as
 evidências de mal uso de recursos públicos, omissões dolosas e
 responsabilizar as pessoas culpadas.
 
-<center>
-
-<img src="https://static.poder360.com.br/2021/05/gif-pazuello-cpi.gif" width="349"/>
-
-</center>
-
 ## O que é
 
 Para ajudar a entender melhor esse contexto, os dados relativos à CPI
@@ -44,24 +36,12 @@ diferença entre espaço que homens e mulheres receberam na Comissão, a
 nuvem de palavras de cada uma das participantes (depoentes, testemunhas
 e parlamentares) etc.
 
-<center>
-
-<img src="https://www12.senado.leg.br/noticias/materias/2021/04/29/cpi-da-pandemia-omar-aziz-nega-pedido-de-funcionamento-presencial/20210429_00917jr.jpg/@@images/image/imagem_materia" width="256"/>
-
-</center>
-
 ### Metodologia
 
 Os dados foram obtidos utilizando [raspagem de
 dados](https://pt.wikipedia.org/wiki/Coleta_de_dados_web) (web scrap)
 diretamente do Senado Federal, que possui - junto à Câmara dos Deputados
 - um ótimo sistema de dados abertos.
-
-<center>
-
-<img src="man/figures/senado.jpg" width="340"/>
-
-</center>
 
 Foram acessadas cada uma das sessões da CPI e baixadas as transcrições
 oficiais dos discursos. Naturalmente, pode haver algumas diferenças
@@ -115,14 +95,7 @@ Caso queira contribuir com sugestões, críticas ou com alguma outra
 coisa:
 
 -   Repositório do projeto: <https://github.com/rfdornelles/discursocpi>
-
 -   LinkedIn: <https://www.linkedin.com/in/rodrigo-dornelles-576705a2/>
 
 Muito obrigado pela atenção, se puder fique em casa, use máscara e
 vacine-se quando chegar sua vez!
-
-<center>
-
-<img src="https://media1.tenor.com/images/ef3f8360f336d7cd1f4e3779fdadb05f/tenor.gif?itemid=19474691" width="161"/>
-
-</center>
