@@ -389,12 +389,14 @@ ui <- dashboardPage(
             width = 6,
             plotOutput(
               outputId = "grafico_sessoes_nuvem_palavras"
+            )
             ),
+          box(
+            width = 6,
             reactableOutput(
               outputId = "tabela_sessao_ranking_palavras"
             )
           )
-
         )
       # # duração
       # # quantas falaram
@@ -1028,9 +1030,12 @@ lista_palavras_usadas_sessoes <- reactive({
 
   base_tokenizada  %>%
     dplyr::filter(
-    data_sessao >= as.Date(input$sessoes_periodo_datas[1]),
-    data_sessao <= as.Date(input$sessoes_periodo_datas[2])
-  )
+      data_sessao >= as.Date(input$sessoes_periodo_datas[1]),
+      data_sessao <= as.Date(input$sessoes_periodo_datas[2])
+    ) %>%
+    dplyr::select(termo) %>%
+    dplyr::count(termo, sort = TRUE)
+
 
 })
 ### grafico_sessoes_nuvem_palavras
@@ -1040,8 +1045,6 @@ output$grafico_sessoes_nuvem_palavras <- renderPlot({
   req(input$sessoes_periodo_datas[1])
 
   lista_palavras_usadas_sessoes() %>%
-    dplyr::select(termo) %>%
-    dplyr::count(termo, sort = TRUE) %>%
     desenhar_nuvem(
       qnt = 150, corMax = "#01044a", corMin = "#4dfff9") +
     labs(title = glue::glue(
@@ -1058,6 +1061,24 @@ output$grafico_sessoes_nuvem_palavras <- renderPlot({
 
 output$tabela_sessao_ranking_palavras <- renderReactable({
 
+  lista_palavras_usadas_sessoes() %>%
+    reactable(
+      sortable = TRUE,
+      pagination = TRUE,
+      showPagination = TRUE,
+      searchable = FALSE,
+      highlight = TRUE,
+      compact = TRUE,
+      minRows = 10,
+      defaultSortOrder = "desc",
+      defaultSorted = "n",
+      defaultColDef = colDef(align = "center"),
+      columns = list(
+        termo = colDef(name = "Palavra", filterable = TRUE),
+        n = colDef(name = "Repetições",
+                   format = colFormat(separators = TRUE))
+      )
+    )
 
 
 
