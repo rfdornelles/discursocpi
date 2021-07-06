@@ -437,7 +437,7 @@ ui <- dashboardPage(
             width = 12, title = "Termo",
             selectInput(
               inputId = "select_termo_usado",
-              label = "Seleicone o termo desejado",
+              label = "Selecione o termo desejado",
               choices = "Carregando...",
               multiple = FALSE,
               selected = "Carregando..."
@@ -1217,12 +1217,10 @@ tabela_filtrada_reativa <- reactive({
     TRUE ~ "falante"
   )
 
-  termo_usado <- stringr::str_to_lower(input$select_termo_usado) %>%
-    stringr::str_trim() %>%
-    abjutils::rm_accent()
+  termo_usado <- input$select_termo_usado
 
        ranking_palavras_discurso(
-        ranking = 100,
+        ranking = 10000,
         # tf_idf = tipo_tf_idf,
         documento = variavel_selecionada
       ) %>%
