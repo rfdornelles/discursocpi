@@ -172,7 +172,8 @@ ui <- dashboardPage(
             label = "Selecione o recorte de análise",
             choices = c("Por papel", "Por gênero", "Por gênero e por papel",
                          "Por partido", "Por partido e por gênero"),
-            width = "100%"
+            width = "100%",
+            selected = "Por partido"
           ),
           br(),
 
@@ -651,8 +652,8 @@ server <- function(input, output, session) {
        )
 
      grafico <- base %>%
-       ggplot(aes(x = data_sessao, y = tempo_fala)) +
-       geom_col()
+       ggplot(aes(x = data_sessao, y = tempo_fala, fill = data_sessao)) +
+       geom_col(show.legend = FALSE)
 
    } else {
 
@@ -974,6 +975,8 @@ output$tabela_tf_idf <- reactable::renderReactable({
 
 filtrar_sessoes_periodo <- reactive({
 
+ req(input$sessoes_periodo_datas)
+
   discursos_cpi %>%
     dplyr::filter(
       data_sessao >= as.Date(input$sessoes_periodo_datas[1]),
@@ -1114,6 +1117,8 @@ output$tabela_presenca_sessoes <- renderReactable({
 
 lista_palavras_usadas_sessoes <- reactive({
 
+  req(input$sessoes_periodo_datas)
+
   base_tokenizada  %>%
     dplyr::filter(
       data_sessao >= as.Date(input$sessoes_periodo_datas[1]),
@@ -1146,6 +1151,8 @@ output$grafico_sessoes_nuvem_palavras <- renderPlot({
 ### tabela_sessao_ranking_palavras
 
 output$tabela_sessao_ranking_palavras <- renderReactable({
+
+  req(input$select_termo_usado)
 
   lista_palavras_usadas_sessoes() %>%
     reactable(
@@ -1208,6 +1215,8 @@ observe({
 
 tabela_filtrada_reativa <- reactive({
 
+  req(input$select_perspectiva_termos)
+
   resposta <- input$select_perspectiva_termos
 
   variavel_selecionada <- dplyr::case_when(
@@ -1220,7 +1229,7 @@ tabela_filtrada_reativa <- reactive({
   termo_usado <- input$select_termo_usado
 
        ranking_palavras_discurso(
-        ranking = 10000,
+        ranking = 100,
         # tf_idf = tipo_tf_idf,
         documento = variavel_selecionada
       ) %>%

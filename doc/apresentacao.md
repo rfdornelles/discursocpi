@@ -7,7 +7,7 @@
 
 <center>
 
-<img src="https://conteudo.imguol.com.br/c/entretenimento/30/2021/06/11/rafael-chalub-o-esse-menino-em-sua-esquete-da-pifaizer-1623439612984_v2_600x600.jpg.webp" width="158"/>
+<img src="man/figures/pfizer.jpg" width="158"/>
 
 </center>
 
@@ -25,7 +25,7 @@ responsabilizar as pessoas culpadas.
 
 <center>
 
-<img src="https://static.poder360.com.br/2021/05/gif-pazuello-cpi.gif" width="349"/>
+<img src="man/figures/gif-pazuello-cpi.gif" width="349"/>
 
 </center>
 
@@ -42,7 +42,7 @@ e parlamentares) etc.
 
 <center>
 
-<img src="https://www12.senado.leg.br/noticias/materias/2021/04/29/cpi-da-pandemia-omar-aziz-nega-pedido-de-funcionamento-presencial/20210429_00917jr.jpg/@@images/image/imagem_materia" width="256"/>
+<img src="man/figures/imagem_materia.jpg" width="256"/>
 
 </center>
 
@@ -50,8 +50,8 @@ e parlamentares) etc.
 
 Os dados foram obtidos utilizando [raspagem de
 dados](https://pt.wikipedia.org/wiki/Coleta_de_dados_web) (web scrap)
-diretamente do Senado Federal, que possui - junto à Câmara dos Deputados
-- um ótimo sistema de dados abertos.
+diretamente do Senado Federal, que possui (assim como a Câmara dos
+Deputados) um ótimo sistema de dados abertos.
 
 <center>
 
@@ -111,7 +111,6 @@ Caso queira contribuir com sugestões, críticas ou com alguma outra
 coisa:
 
 -   Repositório do projeto: <https://github.com/rfdornelles/discursocpi>
-
 -   LinkedIn: <https://www.linkedin.com/in/rodrigo-dornelles-576705a2/>
 
 Muito obrigado pela atenção, se puder fique em casa, use máscara e
@@ -119,6 +118,6 @@ vacine-se quando chegar sua vez!
 
 <center>
 
-<img src="https://media1.tenor.com/images/ef3f8360f336d7cd1f4e3779fdadb05f/tenor.gif?itemid=19474691" width="161"/>
+<img src="man/figures/tenor.gif"/>
 
 </center>
