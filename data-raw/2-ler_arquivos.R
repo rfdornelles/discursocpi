@@ -113,7 +113,7 @@ limpar_discursos_sessao <- function(arquivo) {
     rvest::html_table() %>%
     purrr::pluck(1) %>%
     janitor::clean_names() %>%
-    dplyr::rename(texto = texto_com_revisao)
+    dplyr::rename(texto = dplyr::contains("texto"))
 
   regex_falante <- "^[[:upper:]]{2,}.*?–"
 
