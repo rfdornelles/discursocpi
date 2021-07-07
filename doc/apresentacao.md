@@ -118,6 +118,6 @@ vacine-se quando chegar sua vez!
 
 <center>
 
-<img src="man/figures/tenor.gif"/>
+<img src="https://media1.tenor.com/images/ef3f8360f336d7cd1f4e3779fdadb05f/tenor.gif?itemid=19474691"/>
 
 </center>

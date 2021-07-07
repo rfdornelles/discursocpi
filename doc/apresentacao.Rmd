@@ -8,7 +8,7 @@ output: github_document
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  #fig.path = "man/figures/README-",
+  fig.path = "doc/man/figures/",
   out.width = "100%",
   fig.align = "center"
 )
@@ -93,6 +93,6 @@ Muito obrigado pela atenção, se puder fique em casa, use máscara e vacine-se 
 
 <center>
 
-<img src="man/figures/tenor.gif"/>
+<img src="https://media1.tenor.com/images/ef3f8360f336d7cd1f4e3779fdadb05f/tenor.gif?itemid=19474691"/>
 
 </center>
