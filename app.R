@@ -599,10 +599,12 @@ server <- function(input, output, session) {
       dplyr::pull() %>%
       lubridate::seconds()
 
+
+
     # tempo %/% lubridate::hours(1)
     infoBox(
-      title = "Tempo de discuros",
-      value = glue::glue("{tempo / lubridate::hours(1)} horas de fala"),
+      title = "Tempo de discursos",
+      value = glue::glue("{scales::number(tempo / lubridate::hours(1), accuracy = 2, big.mark = '.', decimal.mark = ',')} horas de fala"),
       subtitle = glue::glue("equivalente a mais de {tempo %/% lubridate::days(1)} dias"),
       icon = icon("comments"),
       color = "maroon",
@@ -653,7 +655,9 @@ server <- function(input, output, session) {
 
      grafico <- base %>%
        ggplot(aes(x = data_sessao, y = tempo_fala, fill = data_sessao)) +
-       geom_col(show.legend = FALSE)
+       geom_col(show.legend = FALSE) +
+       scale_fill_brewer(palette = "Set1") +
+       labs(caption = "(média de duração)")
 
    } else {
 
@@ -669,7 +673,8 @@ server <- function(input, output, session) {
         geom_line() +
         theme(
           axis.text.x = element_text(angle = 45, vjust = 0.5)) +
-        scale_x_date(date_breaks = "2 day", date_labels = "%d/%m")
+        scale_x_date(date_breaks = "2 day", date_labels = "%d/%m") +
+        labs(caption = "(soma da duração)")
 
    }
 
@@ -679,7 +684,7 @@ server <- function(input, output, session) {
 
    grafico +
      labs(
-       title = "Duração das sessões",
+       title = "Duração das sessões*",
        x = "Dia da sessão",
        y = "Duração"
      )
@@ -1229,7 +1234,7 @@ tabela_filtrada_reativa <- reactive({
   termo_usado <- input$select_termo_usado
 
        ranking_palavras_discurso(
-        ranking = 100,
+        ranking = 10000,
         # tf_idf = tipo_tf_idf,
         documento = variavel_selecionada
       ) %>%
