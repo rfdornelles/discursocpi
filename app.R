@@ -565,7 +565,7 @@ server <- function(input, output, session) {
 
   output$contagem_regressiva <- renderValueBox({
 
-    prazo_final <- lubridate::ymd_hms("2021-08-07 23:59:59",
+    prazo_final <- lubridate::ymd_hms("2021-11-05 23:59:59",
                                       tz = "America/Sao_Paulo")
 
     tempo <- Sys.time()
@@ -763,7 +763,7 @@ observe({
     updateSelectInput(
     session,
     inputId = "select_pessoa_selecionada",
-    choices = valores_falante(),
+    choices = sort(valores_falante()),
     selected = sample(valores_falante(), 1)
   )
 
