@@ -172,7 +172,8 @@ ui <- dashboardPage(
             label = "Selecione o recorte de análise",
             choices = c("Por papel", "Por gênero", "Por gênero e por papel",
                          "Por partido", "Por partido e por gênero"),
-            width = "100%"
+            width = "100%",
+            selected = "Por partido"
           ),
           br(),
 
@@ -437,7 +438,7 @@ ui <- dashboardPage(
             width = 12, title = "Termo",
             selectInput(
               inputId = "select_termo_usado",
-              label = "Seleicone o termo desejado",
+              label = "Selecione o termo desejado",
               choices = "Carregando...",
               multiple = FALSE,
               selected = "Carregando..."
@@ -564,7 +565,7 @@ server <- function(input, output, session) {
 
   output$contagem_regressiva <- renderValueBox({
 
-    prazo_final <- lubridate::ymd_hms("2021-08-07 23:59:59",
+    prazo_final <- lubridate::ymd_hms("2021-11-05 23:59:59",
                                       tz = "America/Sao_Paulo")
 
     tempo <- Sys.time()
@@ -598,10 +599,12 @@ server <- function(input, output, session) {
       dplyr::pull() %>%
       lubridate::seconds()
 
+
+
     # tempo %/% lubridate::hours(1)
     infoBox(
-      title = "Tempo de discuros",
-      value = glue::glue("{tempo / lubridate::hours(1)} horas de fala"),
+      title = "Tempo de discursos",
+      value = glue::glue("{scales::number(tempo / lubridate::hours(1), accuracy = 2, big.mark = '.', decimal.mark = ',')} horas de fala"),
       subtitle = glue::glue("equivalente a mais de {tempo %/% lubridate::days(1)} dias"),
       icon = icon("comments"),
       color = "maroon",
@@ -651,8 +654,10 @@ server <- function(input, output, session) {
        )
 
      grafico <- base %>%
-       ggplot(aes(x = data_sessao, y = tempo_fala)) +
-       geom_col()
+       ggplot(aes(x = data_sessao, y = tempo_fala, fill = data_sessao)) +
+       geom_col(show.legend = FALSE) +
+       scale_fill_brewer(palette = "Set1") +
+       labs(caption = "(média de duração)")
 
    } else {
 
@@ -668,7 +673,8 @@ server <- function(input, output, session) {
         geom_line() +
         theme(
           axis.text.x = element_text(angle = 45, vjust = 0.5)) +
-        scale_x_date(date_breaks = "2 day", date_labels = "%d/%m")
+        scale_x_date(date_breaks = "2 day", date_labels = "%d/%m") +
+        labs(caption = "(soma da duração)")
 
    }
 
@@ -678,7 +684,7 @@ server <- function(input, output, session) {
 
    grafico +
      labs(
-       title = "Duração das sessões",
+       title = "Duração das sessões*",
        x = "Dia da sessão",
        y = "Duração"
      )
@@ -757,7 +763,7 @@ observe({
     updateSelectInput(
     session,
     inputId = "select_pessoa_selecionada",
-    choices = valores_falante(),
+    choices = sort(valores_falante()),
     selected = sample(valores_falante(), 1)
   )
 
@@ -974,6 +980,8 @@ output$tabela_tf_idf <- reactable::renderReactable({
 
 filtrar_sessoes_periodo <- reactive({
 
+ req(input$sessoes_periodo_datas)
+
   discursos_cpi %>%
     dplyr::filter(
       data_sessao >= as.Date(input$sessoes_periodo_datas[1]),
@@ -1114,6 +1122,8 @@ output$tabela_presenca_sessoes <- renderReactable({
 
 lista_palavras_usadas_sessoes <- reactive({
 
+  req(input$sessoes_periodo_datas)
+
   base_tokenizada  %>%
     dplyr::filter(
       data_sessao >= as.Date(input$sessoes_periodo_datas[1]),
@@ -1146,6 +1156,8 @@ output$grafico_sessoes_nuvem_palavras <- renderPlot({
 ### tabela_sessao_ranking_palavras
 
 output$tabela_sessao_ranking_palavras <- renderReactable({
+
+  req(input$select_termo_usado)
 
   lista_palavras_usadas_sessoes() %>%
     reactable(
@@ -1208,6 +1220,8 @@ observe({
 
 tabela_filtrada_reativa <- reactive({
 
+  req(input$select_perspectiva_termos)
+
   resposta <- input$select_perspectiva_termos
 
   variavel_selecionada <- dplyr::case_when(
@@ -1217,12 +1231,10 @@ tabela_filtrada_reativa <- reactive({
     TRUE ~ "falante"
   )
 
-  termo_usado <- stringr::str_to_lower(input$select_termo_usado) %>%
-    stringr::str_trim() %>%
-    abjutils::rm_accent()
+  termo_usado <- input$select_termo_usado
 
        ranking_palavras_discurso(
-        ranking = 100,
+        ranking = 10000,
         # tf_idf = tipo_tf_idf,
         documento = variavel_selecionada
       ) %>%
