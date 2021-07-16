@@ -73,6 +73,7 @@ base_limpa <- base_limpa %>%
     falante = dplyr::case_when(
     falante == "MARCELO ANTÔNIO CARTAXO QUEIROGA LOPES" ~ "MARCELO QUEIROGA",
     falante == "MARCELLUS JOSÉ BARROSO CAMPÊLO" ~ "MARCELLUS CAMPELO",
+    falante == "FRANCIELI FONTANA SUTILE FANTINATO" ~ "FRANCIELI FONTANA SUTILE TARDETTI FANTINATO",
     TRUE ~ falante
     )
   )
