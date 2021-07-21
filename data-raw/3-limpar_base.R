@@ -132,3 +132,8 @@ discursos_cpi <- base_limpa
 
 usethis::use_data(discursos_cpi, overwrite = TRUE,
                   version = 3, compress = "gzip")
+
+
+# exporta xlsx -------------------------------------------------------------
+
+writexl::write_xlsx(discursos_cpi, "data/discursos_cpi_pandemia_limpos.xlsx")
