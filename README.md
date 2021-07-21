@@ -11,6 +11,10 @@ Shiny disponível em:
 
 <https://rfdornelles.shinyapps.io/cpipandemia/>
 
+## Dados limpos
+
+Os dados limpos e atualizados podem ser baixados em formato .xlsx no link: <https://github.com/rfdornelles/discursocpi/raw/main/data/discursos_cpi_pandemia_limpos.xlsx>
+
 ## Contexto
 
 É certo que o Brasil lidou e vem lidando muito mal com a pandemia da
@@ -63,6 +67,14 @@ Ainda, você pode copiar diretamente usando o comando abaixo:
 ``` r
 # install.packages("devtools")
 devtools::install_github("rfdornelles/discursocpi")
+```
+
+## Rodar localmente
+
+É possível também rodar o aplicativo em seu computador (que tenha R e Shiny instalados) com o comando:
+
+``` r
+shiny::runGitHub("rfdornelles/discursocpi", ref = "main")
 ```
 
 ### A fazer
