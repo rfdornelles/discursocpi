@@ -19,6 +19,12 @@ jobs:
       - name: Install packages
         run: |
           install.packages("remotes")
+          install.packages("progressr")
+          install.packages("glue")
+          install.packages("fs")
+          install.packages("janitor")
+          install.packages("writexl")
+          install.packages("genderBR")
         shell: Rscript {0}
       - name: Execute Script
         run: |
