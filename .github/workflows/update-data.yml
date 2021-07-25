@@ -3,7 +3,7 @@ on:
   - cron: "15 * * * *"
   push:
     branches:
-      - master
+      - main
 
 name: update-data
 
