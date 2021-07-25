@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - uses: rocker/tidyverse:latest
+      - container: rocker/tidyverse:latest
       - name: Install packages
         run: |
           install.packages("remotes")
