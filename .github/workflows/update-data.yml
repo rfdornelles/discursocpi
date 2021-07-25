@@ -11,11 +11,11 @@ jobs:
   render:
     name: update-data
     runs-on: ubuntu-latest
+    container: rocker/tidyverse:latest
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - container: rocker/tidyverse:latest
       - name: Install packages
         run: |
           install.packages("remotes")
