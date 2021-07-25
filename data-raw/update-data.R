@@ -9,7 +9,7 @@ source("data-raw/3-limpar_base.R", encoding = "UTF-8")
   readr::write_csv(discursos_cpi, "data/discursos_cpi_pandemia_limpos.csv")
 # )
 
-source("r/auxiliares-foto-token.R", encoding = "UTF-8")
+source("R/auxiliares-foto-token.R", encoding = "UTF-8")
 
 source("data-raw/exporta_base_tokenizada.R", encoding = "UTF-8")
 source("data-raw/exporta_fotos.R", encoding = "UTF-8")
