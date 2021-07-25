@@ -6,7 +6,7 @@ source("data-raw/3-limpar_base.R", encoding = "UTF-8")
 
 # readr::with_edition(
 #   1,
-  readr::write_csv(discrusos_cpi, "data/discursos_cpi_pandemia_limpos.csv")
+  readr::write_csv(discursos_cpi, "data/discursos_cpi_pandemia_limpos.csv")
 #)
 
 
