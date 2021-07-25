@@ -138,10 +138,3 @@ usethis::use_data(discursos_cpi, overwrite = TRUE,
 
 writexl::write_xlsx(discursos_cpi, "data/discursos_cpi_pandemia_limpos.xlsx")
 
-
-# exporta csv -------------------------------------------------------------
-
-readr::with_edition(
-  1,
-  readr::write_csv(discrusos_cpi, "data/discursos_cpi_pandemia_limpos.csv")
-)
