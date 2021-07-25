@@ -22,7 +22,7 @@ jobs:
         shell: Rscript {0}
       - name: Execute Script
         run: |
-          Rscript data-raw/actions-update-data.R
+          Rscript data-raw/update-data.R
       - name: Commit results
         run: |
           git config --local user.email "actions@github.com"
