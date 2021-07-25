@@ -40,5 +40,5 @@ jobs:
           git add data-raw/html
           git add data-raw/xml
           git add data
-          git commit -m 'Update data' || echo "Update data"
-          git push origin || echo "Update data"
+          git commit -m 'Atualização automática dos dados' || echo "Atualização automática dos dados"
+          git push origin || echo "Atualização automática dos dados"
