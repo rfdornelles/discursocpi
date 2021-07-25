@@ -1,6 +1,6 @@
 on:
   schedule:
-  - cron: "15 * * * *"
+  - cron: "* 5 * * *"
   push:
     branches:
       - main
@@ -25,6 +25,8 @@ jobs:
           install.packages("janitor")
           install.packages("writexl")
           install.packages("genderBR")
+          install.packages("tidytext")
+          install.packages("tm")
           remotes::install_github("abjur/abjutils")
         shell: Rscript {0}
       - name: Rodar script de raspagem de dados
