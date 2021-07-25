@@ -35,22 +35,40 @@ baixar_reunioes_cpi <- function(mes,
   mes <- as.character(mes)
   mes <- stringr::str_pad(string = mes, width = "2", pad = "0")
 
-   end_agenda <- "agendareuniao/"
+  end_agenda <- "agendareuniao/"
 
   datas <- glue::glue("2021{mes}01/2021{mes}31")
 
+  # destino
+  destino <- glue::glue("data-raw/xml/reunioes_{mes}.xml")
+
+  # temfile
+  tmp <- tempfile(fileext = ".xml")
+
   # requisição
 
-  httr::GET(
+  req <- httr::GET(
     url = glue::glue("{url_base}{end_agenda}{datas}"),
     query = query,
     httr::accept_xml(),
     httr::write_disk(
-      path = glue::glue("data-raw/xml/reunioes_{mes}.xml"),
+      #path = ,
+      path = tmp,
       overwrite = TRUE
     ),
     httr::progress()
   )
+
+  if (!is.null(purrr::safely(xml2::read_xml)(tmp)$result) & req$status_code == 200) {
+
+    fs::file_copy(path = tmp, new_path = destino, overwrite = TRUE)
+
+
+  } else {
+
+    print(glue::glue("Erro ao baixar sessões do mês {mes}."))
+  }
+
 
 
 }
@@ -59,6 +77,8 @@ baixar_reunioes_cpi <- function(mes,
 
 # baixar os códigos de reunião das CPI
 ler_codigos_cpi <- function(arquivo) {
+
+  print(paste("Lendo arquivo", arquivo))
 
 xml2::read_xml(arquivo) %>%
   xml2::xml_find_all("//reuniao/codigo") %>%
@@ -136,6 +156,7 @@ Sys.sleep(1)
 # iterar ------------------------------------------------------------------
 
 # baixar lista de reuniões
+# TODO: mês atual
 purrr::walk(.x = 4:7,
             .f = baixar_reunioes_cpi)
 
@@ -156,7 +177,7 @@ progressr::with_progress({
 lista_discursos_para_baixar %>%
   purrr::walk(
     purrr::possibly(baixar_discursos, otherwise = NULL),
-    prog = p)
+    prog = p, force = TRUE)
 
 })
 

@@ -73,6 +73,7 @@ base_limpa <- base_limpa %>%
     falante = dplyr::case_when(
     falante == "MARCELO ANTÔNIO CARTAXO QUEIROGA LOPES" ~ "MARCELO QUEIROGA",
     falante == "MARCELLUS JOSÉ BARROSO CAMPÊLO" ~ "MARCELLUS CAMPELO",
+    falante == "FRANCIELI FONTANA SUTILE FANTINATO" ~ "FRANCIELI FONTANA SUTILE TARDETTI FANTINATO",
     TRUE ~ falante
     )
   )
@@ -131,3 +132,8 @@ discursos_cpi <- base_limpa
 
 usethis::use_data(discursos_cpi, overwrite = TRUE,
                   version = 3, compress = "gzip")
+
+
+# exporta xlsx -------------------------------------------------------------
+
+writexl::write_xlsx(discursos_cpi, "data/discursos_cpi_pandemia_limpos.xlsx")
