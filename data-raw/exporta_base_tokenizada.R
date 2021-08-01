@@ -25,4 +25,6 @@ base_tokenizada <- tokenizar_base(base)
 
 # exportar ----------------------------------------------------------------
 
-usethis::use_data(base_tokenizada, overwrite = TRUE, version = 3)
+usethis::use_data(
+  base_tokenizada, overwrite = TRUE, version = 3, compress = "gzip")
+
