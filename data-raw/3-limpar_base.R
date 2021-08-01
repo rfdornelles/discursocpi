@@ -133,6 +133,9 @@ discursos_cpi <- base_limpa
 usethis::use_data(discursos_cpi, overwrite = TRUE,
                   version = 3, compress = "gzip")
 
+# fst::write_fst(x = discursos_cpi,
+#                path = "data/discursos_cpi.fst"
+#               )
 
 # exporta xlsx -------------------------------------------------------------
 
