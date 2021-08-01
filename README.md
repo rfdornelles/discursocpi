@@ -11,6 +11,12 @@ Shiny disponível em:
 
 <https://rfdornelles.shinyapps.io/cpipandemia/>
 
+## Dados limpos e atualizados
+
+Os dados obtidos são obtidos diariamente e disponibilizados já limpos e organizados em diversos
+formatos na pasta `/data`. [Aqui, por exemplo, você pode acessar diretamente no formato `.xlsx`](https://github.com/rfdornelles/discursocpi/raw/main/data/discursos_cpi_pandemia_limpos.xlsx)
+
+
 ## Contexto
 
 É certo que o Brasil lidou e vem lidando muito mal com a pandemia da
@@ -40,8 +46,7 @@ e parlamentares) etc.
 
 Os dados foram obtidos utilizando [raspagem de
 dados](https://pt.wikipedia.org/wiki/Coleta_de_dados_web) (web scrap)
-diretamente do Senado Federal, que possui - junto à Câmara dos Deputados
-- um ótimo sistema de dados abertos.
+diretamente do Senado Federal, que possui (junto à Câmara dos Deputados) um ótimo sistema de dados abertos.
 
 Foram acessadas cada uma das sessões da CPI e baixadas as transcrições
 oficiais dos discursos. Naturalmente, pode haver algumas diferenças
@@ -74,8 +79,6 @@ conclusão do (ótimo) curso de
 ferramenta útil para a comunidade e por isso num futuro próximo espero
 poder:
 
--   automatizar a raspagem dos dados através de GitHub Actions, a fim de
-    que a base esteja atualizada diariamente
 -   acrescentar os dados relativos aos requerimentos a serem avaliados
     pela CPI
 -   analisar também os documentos que estejam públicos
