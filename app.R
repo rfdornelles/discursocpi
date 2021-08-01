@@ -11,13 +11,38 @@ library(ggplot2)
 library(rmarkdown)
 library(reactable)
 library(shinycssloaders)
+# library(fst)
 
 # Base --------------------------------------------------------------------
 
-data("discursos_cpi")
-data("tabela_fotos")
-data("base_tokenizada")
-#source("R/auxiliares.R", encoding = "UTF-8")
+# função para leitura de bases remotas
+ler_base_remota <- function(arquivo, extensao = ".rda") {
+
+  url_base <- "https://github.com/rfdornelles/discursocpi/raw/main/data/"
+
+  url_arquivo <- paste0(url_base, arquivo, extensao)
+
+  tmp_base_remota <- tempfile()
+
+  download.file(
+    url = url_arquivo,
+    destfile = tmp_base_remota
+  )
+
+ load(tmp_base_remota, envir =  .GlobalEnv)
+
+}
+
+# listar as bases usadas
+# data("discursos_cpi")
+# data("tabela_fotos")
+# data("base_tokenizada")
+lista_nome_bases <- c("discursos_cpi",
+                      "tabela_fotos",
+                      "base_tokenizada")
+
+# carregar tudo
+lapply(lista_nome_bases, ler_base_remota)
 
 # UI ----------------------------------------------------------------------
 
