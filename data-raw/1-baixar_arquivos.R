@@ -157,7 +157,7 @@ Sys.sleep(1)
 
 # baixar lista de reuniões
 # TODO: mês atual
-purrr::walk(.x = 4:7,
+purrr::walk(.x = 4:lubridate::month(Sys.Date()),
             .f = baixar_reunioes_cpi)
 
 # lista com arquivos .xml das reuniões
