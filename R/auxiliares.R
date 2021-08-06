@@ -238,7 +238,6 @@ ranking_palavras_discurso <- function(
 }
 
 
-
 # tooltip -----------------------------------------------------------------
 
 with_tooltip <- function(value, tooltip) {

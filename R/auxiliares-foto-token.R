@@ -1,3 +1,11 @@
+
+# rm accent ---------------------------------------------------------------
+
+rm_accent <- function (x)
+{
+  stringi::stri_trans_general(x, "Latin-ASCII")
+}
+
 # foto --------------------------------------------------------------------
 
 
@@ -28,7 +36,7 @@ tokenizar_base <- function(base) {
   base_tokenizada <- base %>%
     tidytext::unnest_tokens(termo, texto) %>%
     # remover acentos
-    dplyr::mutate(termo = abjutils::rm_accent(termo))
+    dplyr::mutate(termo = rm_accent(termo))
 
   # remover letras soltas
   base_tokenizada <- base_tokenizada %>%
@@ -47,7 +55,7 @@ tokenizar_base <- function(base) {
   # remover stopwords
   base_tokenizada <- base_tokenizada %>%
     dplyr::filter(
-      !termo %in% abjutils::rm_accent(stopwords)
+      !termo %in% rm_accent(stopwords)
     )
 
   return(base_tokenizada)

@@ -84,7 +84,7 @@ base_limpa <- base_limpa %>%
 # acrescentar gênero
 base_limpa <- base_limpa %>%
   dplyr::mutate(
-    genero = genderBR::get_gender(abjutils::rm_accent(falante)),
+    genero = genderBR::get_gender(rm_accent(falante)),
     genero = dplyr::if_else(genero == "Female", "Feminino",
                             "Masculino",
                             # os nomes NA eram de homens

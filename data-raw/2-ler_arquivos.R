@@ -10,7 +10,7 @@ library(tibble)
 
 
 # lista de arquivos -------------------------------------------------------
-
+# listar os arquivos com extensão .html
 lista_html <- fs::dir_info("data-raw/html/", regex = "\\.html$") %>%
   dplyr::pull(path)
 

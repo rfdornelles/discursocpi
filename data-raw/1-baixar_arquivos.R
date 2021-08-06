@@ -185,8 +185,14 @@ progressr::with_progress({
 lista_discursos_para_baixar %>%
   purrr::walk(
     purrr::possibly(baixar_discursos, otherwise = NULL),
-    prog = p, force = TRUE)
+    prog = p, force = FALSE)
 
 })
 
+# forçar baixar de novo os últimos discursos
+lista_discursos_para_baixar %>%
+  tail(5) %>%
+  purrr::walk(
+    purrr::possibly(baixar_discursos, otherwise = NULL),
+    prog = p, force = TRUE)
 
