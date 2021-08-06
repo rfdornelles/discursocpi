@@ -1,9 +1,9 @@
 on:
   schedule:
   - cron: "0 10 * * *"
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
 
 name: atualizar-dados-cpi
 
@@ -27,7 +27,7 @@ jobs:
           install.packages("genderBR")
           install.packages("tidytext")
           install.packages("tm")
-          remotes::install_github("abjur/abjutils")
+
         shell: Rscript {0}
       - name: Rodar script de raspagem de dados
         run: |
