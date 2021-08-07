@@ -79,6 +79,14 @@ base_limpa <- base_limpa %>%
   )
 
 
+# corrigir nome de oradores
+
+base_limpa <- base_limpa %>%
+  dplyr::mutate(
+    falante = stringr::str_remove_all(falante, "PDTCIDADANIAREDEPSB|PDTCIDADANIAREDE"),
+    falante = stringr::str_trim(falante)
+  )
+
 # acrescentar dados -------------------------------------------------------
 
 # acrescentar gênero
