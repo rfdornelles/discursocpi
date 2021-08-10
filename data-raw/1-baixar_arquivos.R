@@ -57,8 +57,7 @@ baixar_reunioes_cpi <- function(mes,
     httr::write_disk(
       path = tmp, # salvar no arquivo temporário
       overwrite = TRUE # sobrescrever, embora na prática vai ser raro
-    ),
-    httr::progress()
+    )
   )
 
   # checar se o arquivo não falhou ao baixar, se não veio em branco ou outro erro
@@ -122,10 +121,11 @@ baixar_discursos <- function(reuniao, prog, force = FALSE) {
 
   url_final <- glue::glue("{url_base}{end_discursos}{reuniao}")
 
+  print(paste("Lendo reunião", reuniao))
+
   # requisição intermediária para obter a url da página com as notas
     r_intermediaria <- httr::GET(url = url_final,
-                               httr::accept_xml(),
-                               httr::progress())
+                               httr::accept_xml())
 
   # obter o link
   link_notas <- r_intermediaria %>%
@@ -145,8 +145,7 @@ baixar_discursos <- function(reuniao, prog, force = FALSE) {
       httr::write_disk(
         path = temporario,
         overwrite = TRUE
-      ),
-      httr::progress()
+      )
     )
 
   # checar se o arquivo não é vazio

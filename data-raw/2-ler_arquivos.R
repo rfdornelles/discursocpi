@@ -86,6 +86,8 @@ ler_infos_sessao <- function(arquivo) {
 
 limpar_discursos_sessao <- function(arquivo) {
 
+  print(glue::glue("Lendo sessão - {arquivo}"))
+
   # ler o html do arquivo, com encoding correto
   html <- xml2::read_html(arquivo, encoding = "UTF-8")
 
