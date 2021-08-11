@@ -75,6 +75,7 @@ base_limpa <- base_limpa %>%
     falante == "MARCELLUS JOSÉ BARROSO CAMPÊLO" ~ "MARCELLUS CAMPELO",
     falante == "FRANCIELI FONTANA SUTILE FANTINATO" ~ "FRANCIELI FONTANA SUTILE TARDETTI FANTINATO",
     falante == "MARCELO BLANCO" ~ "MARCELO BLANCO DA COSTA",
+    falante == "SIMONE TEBET  A" ~ "SIMONE TEBET",
     TRUE ~ falante
     )
   )
