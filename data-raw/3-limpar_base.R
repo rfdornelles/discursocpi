@@ -26,7 +26,9 @@ remover <- c("Para questão de ordem\\.", "Pela ordem\\.",
              "Para explicação pessoal", "Como Relator",
              "Fazendo soar a campainha", "Para contraditar",
              "GEN\\. ",
-             "Para discutir", "[[:upper:]]*.-.[[:upper:]]{2,2}",
+             "Para [Dd]iscursar",
+             "Para discutir",
+             "[[:upper:]]*.-.[[:upper:]]{2,2}",
              "[[:punct:]]*",
              "\\.") %>%
   # montar a regex
